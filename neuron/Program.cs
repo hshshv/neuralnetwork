@@ -45,10 +45,9 @@ namespace neuronprog
             layer[] lyrs = { lyr1, lyr2, lyr3 };
             network themostamazingnetwork = new network(lyrs);
             ///
-            //themostamazingnetwork.networkDiagnos();
             themostamazingnetwork.Fire();
-            //themostamazingnetwork.networkDiagnos();
-
+            Console.WriteLine("finel layer: ");
+            themostamazingnetwork.layers[themostamazingnetwork.layers.Length - 1].printLayer();
         }
     }
 
@@ -105,37 +104,53 @@ namespace neuronprog
 
     class network
     {
+        static bool printNetworkActivity = false;
         public layer[] layers;
-        public layer Fire()
+        public void Fire()
         {
-            Console.WriteLine("fireing the network");
+            if (printNetworkActivity)
+            {
+                Console.WriteLine("fireing the network");
+            }
             for(int thisLayer = 0; thisLayer < layers.Length - 1; ++thisLayer)
             {
-                Console.WriteLine(" fireing layer " + thisLayer);
+                if (printNetworkActivity)
+                {
+                    Console.WriteLine(" fireing layer " + thisLayer);
+                }
                 for (int thisNeuron = 0; thisNeuron < layers[thisLayer].neurons.Length; ++thisNeuron)
                 {
-                    Console.WriteLine("  fureing neuron " + thisNeuron);
-                    
+                    if (printNetworkActivity)
+                    {
+                        Console.WriteLine("  fureing neuron " + thisNeuron);
+                    }
                     //networkDiagnos();//radical step
                     
                     for(int thisConnection = 0; thisConnection < layers[thisLayer].neurons[thisNeuron].connections.Length; ++thisConnection)
                     {
-                        Console.WriteLine("   fireing throught connection " + thisConnection);
 
                         int destnitionNeuron = layers[thisLayer].neurons[thisNeuron].connections[thisConnection].destenation;
                         double thisValue = layers[thisLayer].neurons[thisNeuron].input;
                         double thisMultyplayer = layers[thisLayer].neurons[thisNeuron].connections[thisConnection].multyplayer;
-
-                        Console.Write("  neuron " + thisNeuron + " in layer " + thisLayer + " outputs " + thisValue + " multyplyed by " + thisMultyplayer + ". neuron " + destnitionNeuron + " in layer " + (thisLayer + 1) + " updated from " + layers[thisLayer + 1].neurons[destnitionNeuron].input + " to ");
+                        if (printNetworkActivity)
+                        {
+                            Console.WriteLine("   fireing throught connection " + thisConnection);
+                            Console.Write("  neuron " + thisNeuron + " in layer " + thisLayer + " outputs " + thisValue + " multyplyed by " + thisMultyplayer + ". neuron " + destnitionNeuron + " in layer " + (thisLayer + 1) + " updated from " + layers[thisLayer + 1].neurons[destnitionNeuron].input + " to ");
+                        }
                         layers[thisLayer + 1].neurons[destnitionNeuron].input = layers[thisLayer + 1].neurons[destnitionNeuron].input + thisValue * thisMultyplayer;
-                        Console.WriteLine(layers[thisLayer + 1].neurons[destnitionNeuron].input);
+                        if (printNetworkActivity)
+                        {
+                            Console.WriteLine(layers[thisLayer + 1].neurons[destnitionNeuron].input);
+                        }
 
                     }
                 }
             }
-            Console.WriteLine("finel layer: ");
-            layers[layers.Length - 1].printLayer();
-            return (layers[layers.Length - 1]);
+            if (printNetworkActivity)
+            {
+                Console.WriteLine("finel layer: ");
+                layers[layers.Length - 1].printLayer();
+            }
         }
         public void networkDiagnos()
         {
