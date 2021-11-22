@@ -2,53 +2,28 @@
 using System.Collections.Generic;
 
 
+
 namespace neuronprog
 {
     class Program
     {
         static void Main(string[] args)
         {
-            connection conn1 = new connection(0, 0.5);
-            connection[] conns1 = {conn1};
-            neuron nrn1 = new neuron(conns1);
-            nrn1.input = 0.8;
+            network amazinetwork = new network();
+            amazinetwork.addLayer();
+            amazinetwork.layers[0].addNeuron(0, 0.2);
+            amazinetwork.layers[0].neurons[0].input = 0.6;
+            amazinetwork.layers[0].addNeuron(0, 4.0);
+            amazinetwork.layers[0].neurons[1].input = 0.2;
+            amazinetwork.addLayer();
+            amazinetwork.layers[1].addNeuron(0, 0.7);
+            amazinetwork.addLayer();
+            amazinetwork.layers[2].addNeuron();//צריך לעשות שבכל שכבה יהיה אוטומטית ניורון אחד או משהו כזה
 
-            connection conn2 = new connection(0, 0.3);
-            connection[] conns2 = { conn2 };
-            neuron nrn2 = new neuron(conns2);
-            nrn2.input = 0.7;
-
-            neuron[] nrns1 = {nrn1, nrn2};
-
-            layer lyr1 = new layer(nrns1);
-            //
-
-            connection conn3 = new connection(0, 2);
-            connection[] conns3 = { conn3 };
-            neuron nrn3 = new neuron(conns3);
-            nrn3.input = 0.0;
-            neuron[] nrns2 = { nrn3 };
-
-            layer lyr2 = new layer(nrns2);
-            //
-
-            connection conn4 = new connection(0, 0);//finel neuron
-            connection[] conns4 = { conn4 };
-            neuron nrn4 = new neuron(conns4);
-            nrn4.input = 0.0;
-            neuron[] nrns3 = { nrn4 };
-
-            layer lyr3 = new layer(nrns3);
-            //
-
-
-            layer[] lyrs = { lyr1, lyr2, lyr3 };
-            network themostamazingnetwork = new network(lyrs);
-            ///
-            themostamazingnetwork.Fire();
-            Console.WriteLine("finel layer: ");
-            themostamazingnetwork.layers[themostamazingnetwork.layers.Length - 1].printLayer();
+            amazinetwork.Fire();
+            //amazinetwork.networkDiagnos();
         }
+            
     }
 
     class connection
@@ -60,31 +35,55 @@ namespace neuronprog
             destenation = des;
             multyplayer = mlty;
         }
+
+        public connection()
+        {
+            destenation = 0;
+            multyplayer = 0;
+        }
     }
     class neuron
     {
         public double input = 0.0;
-        public connection[] connections;
+        public List<connection> connections = new List<connection>();
+        public string name;
         public void activate()
         {
             //later
         }
 
-        
-        public neuron(connection[] cncs)
+        public neuron(List<connection> cncs)
         {
-            connections = new connection[cncs.Length];
-            for(int i = 0; i < cncs.Length; ++i)
+            connections = cncs;
+            for (int i = 0; i < cncs.Count; ++i)
             {
                 connections[i] = cncs[i];
             }
         }
-        
+        public neuron(List<connection> cncs, string neuronName) : this(cncs)
+        {
+            name = neuronName;
+        }
+
+        public neuron() { }
+
+        public neuron(int destention, double multypliiir)
+        {
+            connection myconn = new connection(destention, multypliiir);
+            connections.Add(myconn);
+        }
+        public void addConnection(int destnetion, double multyplaer)
+        {
+            connection emptyConnection = new connection(destnetion, multyplaer);
+            connections.Add(emptyConnection);
+        }
+
+
     }
 
     class layer
     {
-        public neuron[] neurons;
+        public List<neuron> neurons = new List<neuron>() ;
         public void printLayer()
         {
             foreach(neuron i in neurons)
@@ -92,33 +91,48 @@ namespace neuronprog
                 Console.WriteLine("neuron: " + i.input);
             }
         }
-        public layer(neuron[] nrns)
+        public layer(List<neuron> nrns)
         {
-            neurons = new neuron[nrns.Length];
-            for (int i = 0; i < nrns.Length; ++i)
+            neurons = nrns;
+            for (int i = 0; i < nrns.Count; ++i)
             {
                 neurons[i] = nrns[i];
             }
+        }
+
+        public layer() 
+        {
+            
+        }
+        public void addNeuron()
+        {
+            neuron emptyNeuron = new neuron();
+            neurons.Add(emptyNeuron);
+        }
+        public void addNeuron(int des, double mltp)
+        {
+            neuron newRon = new neuron(des, mltp);
+            neurons.Add(newRon);
         }
     }
 
     class network
     {
-        static bool printNetworkActivity = false;
-        public layer[] layers;
+        static bool printNetworkActivity = true;
+        public List<layer> layers = new List<layer>();
         public void Fire()
         {
             if (printNetworkActivity)
             {
                 Console.WriteLine("fireing the network");
             }
-            for(int thisLayer = 0; thisLayer < layers.Length - 1; ++thisLayer)
+            for(int thisLayer = 0; thisLayer < layers.Count - 1; ++thisLayer)
             {
                 if (printNetworkActivity)
                 {
                     Console.WriteLine(" fireing layer " + thisLayer);
                 }
-                for (int thisNeuron = 0; thisNeuron < layers[thisLayer].neurons.Length; ++thisNeuron)
+                for (int thisNeuron = 0; thisNeuron < layers[thisLayer].neurons.Count; ++thisNeuron)
                 {
                     if (printNetworkActivity)
                     {
@@ -126,7 +140,7 @@ namespace neuronprog
                     }
                     //networkDiagnos();//radical step
                     
-                    for(int thisConnection = 0; thisConnection < layers[thisLayer].neurons[thisNeuron].connections.Length; ++thisConnection)
+                    for(int thisConnection = 0; thisConnection < layers[thisLayer].neurons[thisNeuron].connections.Count; ++thisConnection)
                     {
 
                         int destnitionNeuron = layers[thisLayer].neurons[thisNeuron].connections[thisConnection].destenation;
@@ -149,24 +163,25 @@ namespace neuronprog
             if (printNetworkActivity)
             {
                 Console.WriteLine("finel layer: ");
-                layers[layers.Length - 1].printLayer();
+                layers[layers.Count - 1].printLayer();
+                
             }
         }
         public void networkDiagnos()
         {
             Console.WriteLine("///////////////");
             Console.WriteLine("diagnose");
-            Console.WriteLine("this network has " + layers.Length + " layers");
-            for (int thisLayer = 0; thisLayer < layers.Length; ++thisLayer)
+            Console.WriteLine("this network has " + layers.Count + " layers");
+            for (int thisLayer = 0; thisLayer < layers.Count; ++thisLayer)
             {
                 Console.WriteLine(" layer " + thisLayer);
-                Console.WriteLine(" this layer has " + layers[thisLayer].neurons.Length + " neurons");
-                for (int thisNeuron = 0; thisNeuron < layers[thisLayer].neurons.Length; ++thisNeuron)
+                Console.WriteLine(" this layer has " + layers[thisLayer].neurons.Count + " neurons");
+                for (int thisNeuron = 0; thisNeuron < layers[thisLayer].neurons.Count; ++thisNeuron)
                 {
                     Console.WriteLine("  neuron " + thisNeuron);
                     Console.WriteLine("  this neuron contains a value of " + layers[thisLayer].neurons[thisNeuron].input);
-                    Console.WriteLine("  this neuron has " + layers[thisLayer].neurons[thisNeuron].connections.Length + " connections");
-                    for (int thisConnection = 0; thisConnection < layers[thisLayer].neurons[thisNeuron].connections.Length; ++thisConnection)
+                    Console.WriteLine("  this neuron has " + layers[thisLayer].neurons[thisNeuron].connections.Count + " connections");
+                    for (int thisConnection = 0; thisConnection < layers[thisLayer].neurons[thisNeuron].connections.Count; ++thisConnection)
                     {
                         Console.WriteLine("   connection " + thisConnection);
 
@@ -185,11 +200,17 @@ namespace neuronprog
         }
         public network(layer[] lyrs)
         {
-            layers = new layer[lyrs.Length];
+            layers = new List<layer>();
             for(int i = 0; i < lyrs.Length; ++i)
             {
                 layers[i] = lyrs[i];
             }
+        }
+        public network()  {  }
+        public void addLayer()
+        {
+            layer emptylyr = new layer();
+            layers.Add(emptylyr);
         }
     }
 
