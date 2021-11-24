@@ -10,11 +10,16 @@ namespace neuronprog
         static void Main(string[] args)
         {
             genome tst = new genome();
-            tst.addGene();
-            tst.genes[0].parts[0] = 5;
-            tst.genes[0].parts[1] = 6;
-            tst.genes[0].parts[2] = 7;
+            tst.addGene(3);
+            
+            for(int i = 0; i < 10; ++i)
+            {
+                tst.print();
+                Console.WriteLine("*mutete: 1 of every 10 parts*");
+                tst.mutate(10);
+            }
             tst.print();
+            
             /*
             network amazinetwork = new network(2, 1);
             amazinetwork.addNeuron(2, 0.5, 1);
