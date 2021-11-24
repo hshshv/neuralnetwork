@@ -9,13 +9,20 @@ namespace neuronprog
     {
         static void Main(string[] args)
         {
+            genome tst = new genome();
+            tst.addGene();
+            tst.genes[0].parts[0] = 5;
+            tst.genes[0].parts[1] = 6;
+            tst.genes[0].parts[2] = 7;
+            tst.print();
+            /*
             network amazinetwork = new network(2, 1);
             amazinetwork.addNeuron(2, 0.5, 1);
             amazinetwork.addNeuron(2, 2, 2);
             amazinetwork.addNeuron(3, 0.3);
             amazinetwork.addNeuron();
             amazinetwork.Fire();
-            //amazinetwork.networkDiagnos();
+            //amazinetwork.networkDiagnos();*/
         }
             
     }
@@ -44,6 +51,7 @@ namespace neuronprog
         public void activate()
         {
             //later
+            genome mmm = new genome();
         }
 
         public neuron(List<connection> cncs)
@@ -73,8 +81,8 @@ namespace neuronprog
         }
         public void addConnection(int destnetion, double multyplaer)
         {
-            connection emptyConnection = new connection(destnetion, multyplaer);
-            connections.Add(emptyConnection);
+            connection newConnection = new connection(destnetion, multyplaer);
+            connections.Add(newConnection);
         }
 
 
@@ -91,10 +99,10 @@ namespace neuronprog
             inputNeurons = inpNueurons;
             outputNeurons = outNeurons;
         }
+
         public void addNeuron()
         {
-            neuron emptyNeuron = new neuron();
-            neurons.Add(emptyNeuron);
+            neurons.Add(new neuron());
         }
         public void addNeuron(int des, double mltp)
         {
