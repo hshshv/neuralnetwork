@@ -8,12 +8,26 @@ namespace neuronprog
     class genome
     {
         public List<gene> genes = new List<gene>();
+        public int numberOfPartInEveryGene;
+        public int chanceOfMutationForEachPart = 30;
+        public int chanceOfCreatingANewGeneOrDeletingOne = 100;
         static Random rndm = new Random();
 
-        public genome() { }
-        public void addGene(int partsInThisGene)
+
+        public genome(int partPerGene) 
         {
-            genes.Add(new gene(partsInThisGene));
+            numberOfPartInEveryGene = partPerGene;
+        }
+        public void addGene()
+        {
+            genes.Add(new gene(numberOfPartInEveryGene));
+        }
+        public void addGenes(int genesToAdd)
+        {
+            for(int i = 0; i < genesToAdd; ++i)
+            {
+                addGene();
+            }
         }
         public void print()
         {
@@ -22,33 +36,37 @@ namespace neuronprog
                 genes[i].print();
                 Console.WriteLine();
             }
+            Console.WriteLine();
         }
 
-        public void mutate(int chanceOfMutationForEachPart)
+        public void mutate()
         {
-            for (int thisGene = 0; thisGene < genes.Count; ++thisGene)
-            {
-                for (int thisPartOfTheGene = 0; thisPartOfTheGene < genes[thisGene].parts.Length; ++thisPartOfTheGene)
-                {
-                    if (rndm.Next(0, chanceOfMutationForEachPart) == 0)
-                    {
-                        genes[thisGene].parts[thisPartOfTheGene] = singelMutetedValue(genes[thisGene].parts[thisPartOfTheGene]);
-                    }
-                }
-            }
+            genes = mutate(this).genes;
         }
-        public static genome mutate(genome genomeToMutat, int chanceOfMutationForEachPart) //this is used to make a mutated copy of a specific genome
+        public static genome mutate(genome genomeToMutat) //this is used to make a mutated copy of a specific genome
         {
+            genomeToMutat.print();
             for (int thisGene = 0; thisGene < genomeToMutat.genes.Count; ++thisGene)
             {
                 for (int thisPartOfTheGene = 0; thisPartOfTheGene < genomeToMutat.genes[thisGene].parts.Length; ++thisPartOfTheGene)
                 {
-                    if (rndm.Next(0, chanceOfMutationForEachPart) == 0)
+                    if (rndm.Next(0, genomeToMutat.chanceOfMutationForEachPart) == 0)
                     {
                         genomeToMutat.genes[thisGene].parts[thisPartOfTheGene] = singelMutetedValue(genomeToMutat.genes[thisGene].parts[thisPartOfTheGene]);
                     }
                 }
             }
+            if (rndm.Next(0, genomeToMutat.chanceOfCreatingANewGeneOrDeletingOne) == 0)//adding a new gene at a randome location
+            {
+                int addNewGeneAt = rndm.Next(0, genomeToMutat.genes.Count);
+                genomeToMutat.genes.Insert(addNewGeneAt, new gene(genomeToMutat.numberOfPartInEveryGene));
+            }
+            if (rndm.Next(0, genomeToMutat.chanceOfCreatingANewGeneOrDeletingOne) == 0)//removing an existing gene at a randome location
+            {
+                genomeToMutat.genes.RemoveAt(rndm.Next(0, genomeToMutat.genes.Count));
+            }
+            genomeToMutat.print();
+
             return (genomeToMutat);
         }
 
@@ -62,6 +80,7 @@ namespace neuronprog
             }
             return (valueAfter);
         }
+
     }
 }
 

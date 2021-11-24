@@ -9,27 +9,18 @@ namespace neuronprog
     {
         static void Main(string[] args)
         {
-            genome tst = new genome();
-            tst.addGene(3);
+            genome tst = new genome(3);
+            tst.chanceOfMutationForEachPart = 5;
+            tst.chanceOfCreatingANewGeneOrDeletingOne = 10;
+            tst.addGenes(3);
             
-            for(int i = 0; i < 10; ++i)
+            for (int i = 0; i < 20; ++i)
             {
                 tst.print();
-                Console.WriteLine("*mutete: 1 of every 10 parts*");
-                tst.mutate(10);
+                tst.mutate();
             }
             tst.print();
-            
-            /*
-            network amazinetwork = new network(2, 1);
-            amazinetwork.addNeuron(2, 0.5, 1);
-            amazinetwork.addNeuron(2, 2, 2);
-            amazinetwork.addNeuron(3, 0.3);
-            amazinetwork.addNeuron();
-            amazinetwork.Fire();
-            //amazinetwork.networkDiagnos();*/
         }
-            
     }
 
     class connection
@@ -56,7 +47,7 @@ namespace neuronprog
         public void activate()
         {
             //later
-            genome mmm = new genome();
+            
         }
 
         public neuron(List<connection> cncs)
