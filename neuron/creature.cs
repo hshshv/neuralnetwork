@@ -9,7 +9,8 @@ namespace neuronprog
         private genome DNA;
         private network brian;
         private bool thisCreatureIsAlive = true;
-        public int numOfNeuronsInTheFirstLayer;
+        public int inputs = 1;
+        public int outputs = 1;
         public bool alive()
         {
             return (thisCreatureIsAlive);
@@ -24,11 +25,12 @@ namespace neuronprog
             DNA = dna;
             brian = getNetworkFromGenome(DNA);
         }
-
         public static network getNetworkFromGenome(genome gnm)
         {
             bool printNetworkCreation = true;
             network net = new network();
+            net.inputNeurons = gnm.genes[0].parts[1];
+            net.outputNeurons = gnm.genes[0].parts[2];
 
             int numOfNeurons = gnm.genes[0].parts[0];
             if (printNetworkCreation)
@@ -50,11 +52,10 @@ namespace neuronprog
                 }
             }
             buffersLocations.Sort();
-            //buffersLocations.Add(buffersLocations[buffersLocations.Count - 1]);
-            buffersLocations.Add(0);
+            buffersLocations.Add(buffersLocations[buffersLocations.Count - 1] + 1);
             if(printNetworkCreation)
             { 
-                Console.Write("networkGen: added empty closer buffer. total num of buffs is: " + buffersLocations.Count);
+                Console.WriteLine("networkGen: added empty closer buffer. total num of buffs is: " + buffersLocations.Count);
             }
             for (int thisNeuron = 0; thisNeuron < numOfNeurons; ++thisNeuron)
             {
@@ -67,6 +68,10 @@ namespace neuronprog
                 for(int thisConnection = buffersLocations[thisNeuron]; thisConnection < buffersLocations[thisNeuron + 1] /*&& thisConnection < gnm.genes.Count*/; ++thisConnection)
                 {
                     net.neurons[thisNeuron].addConnection(gnm.genes[thisConnection].parts[0], gnm.genes[thisConnection].parts[1]);
+                    if(gnm.genes[thisConnection].parts[2] %2 == 1)
+                    {
+                        net.neurons[thisNeuron].connections[net.neurons[thisNeuron].connections.Count - 1].connectedToTheFinalLayer = true;
+                    }
                 }
             }
 
@@ -75,7 +80,7 @@ namespace neuronprog
         bool thisGenomeIsLegit(genome gnm)
         {
             int numOfNeurons = gnm.genes[0].parts[0];
-            if(numOfNeurons < numOfNeuronsInTheFirstLayer)
+            if(numOfNeurons < inputs)
             {
                 return false;
             }

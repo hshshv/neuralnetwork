@@ -8,6 +8,7 @@ namespace neuronprog
     {
         public int destenation;
         public double multyplayer;
+        public bool connectedToTheFinalLayer;
         public connection(int des, double mlty)
         {
             destenation = des;
@@ -25,7 +26,6 @@ namespace neuronprog
         public double value = 0.0;
         public List<connection> connections = new List<connection>();
         public string name;
-        public bool isInTheFinalLayer;
         public /*actually bool*/ void activate()
         {
             //later
@@ -69,9 +69,13 @@ namespace neuronprog
     {
         static bool printNetworkActivity = true;
         public List<neuron> neurons = new List<neuron>();
+        public neuron[] outputLayer = new neuron[1];
         public int inputNeurons;
         public int outputNeurons;
-        public network() { }
+        public network() 
+        {
+            outputLayer[0] = new neuron();
+        }
         public network(int inpNueurons, int outNeurons)
         {
             inputNeurons = inpNueurons;
@@ -100,6 +104,11 @@ namespace neuronprog
             {
                 Console.WriteLine("fireing the network");
             }
+            outputLayer = new neuron[outputNeurons];
+            for(int i = 0; i < outputLayer.Length; ++i)
+            {
+                outputLayer[i] = new neuron();
+            }
 
             for (int thisNeuron = 0; thisNeuron < neurons.Count; ++thisNeuron)
             {
@@ -115,26 +124,33 @@ namespace neuronprog
                     int destnitionNeuron = neurons[thisNeuron].connections[thisConnection].destenation;
                     double thisValue = neurons[thisNeuron].value;
                     double thisMultyplayer = neurons[thisNeuron].connections[thisConnection].multyplayer;
-                    if (printNetworkActivity)
+                    Console.WriteLine("   fireing throught connection " + thisConnection);
+                    if(neurons[thisNeuron].connections[thisConnection].connectedToTheFinalLayer)
                     {
-                        Console.WriteLine("   fireing throught connection " + thisConnection);
-                        Console.Write("  neuron " + thisNeuron + " outputs " + thisValue + " multyplyed by " + thisMultyplayer + ". neuron " + destnitionNeuron + " updated from " + neurons[destnitionNeuron].value + " to ");
+                        if (printNetworkActivity)
+                            Console.Write("  neuron " + thisNeuron + " outputs " + thisValue + " multyplyed by " + thisMultyplayer + ". output " + destnitionNeuron + " updated from " + outputLayer[destnitionNeuron].value + " to ");
+                        outputLayer[destnitionNeuron].value = outputLayer[destnitionNeuron].value + thisValue * thisMultyplayer;
+                        if (printNetworkActivity)
+                            Console.WriteLine(outputLayer[destnitionNeuron].value);
                     }
-                    neurons[destnitionNeuron].value = neurons[destnitionNeuron].value + thisValue * thisMultyplayer;
-                    if (printNetworkActivity)
+                    else
                     {
-                        Console.WriteLine(neurons[destnitionNeuron].value);
+                        if (printNetworkActivity)
+                            Console.Write("  neuron " + thisNeuron + " outputs " + thisValue + " multyplyed by " + thisMultyplayer + ". neuron " + destnitionNeuron + " updated from " + neurons[destnitionNeuron].value + " to ");
+                        
+                        neurons[destnitionNeuron].value = neurons[destnitionNeuron].value + thisValue * thisMultyplayer;
+                        if (printNetworkActivity)
+                            Console.WriteLine(neurons[destnitionNeuron].value);
                     }
-
                 }
             }
 
             if (printNetworkActivity)
             {
                 Console.WriteLine("output neurons: ");
-                for (int i = neurons.Count - outputNeurons; i < neurons.Count; ++i)
+                for (int i = 0; i < outputLayer.Length; ++i)
                 {
-                    Console.WriteLine("neuron " + i + " = " + neurons[i].value);
+                    Console.WriteLine("output[" + i + "]: " + outputLayer[i].value);
                 }
 
             }
@@ -143,9 +159,7 @@ namespace neuronprog
         {
             Console.WriteLine("///////////////");
             Console.WriteLine("diagnose");
-            Console.Write("This network has ");
-            Console.Write(neurons.Count);
-            Console.WriteLine(" neurons");
+            Console.WriteLine("This network has " + neurons.Count + " internal neurons and " + outputNeurons + " outputs");
             for (int thisNeuron = 0; thisNeuron < neurons.Count; ++thisNeuron)
             {
                 Console.WriteLine("  neuron " + thisNeuron);
@@ -156,13 +170,26 @@ namespace neuronprog
                     Console.WriteLine("   connection " + thisConnection);
 
                     int destnitionNeuron = neurons[thisNeuron].connections[thisConnection].destenation;
-                    Console.Write("   this connection goes to neuron " + destnitionNeuron);
+                    
+                    if(neurons[thisNeuron].connections[thisConnection].connectedToTheFinalLayer)
+                    {
+                        Console.Write("   this connection goes to output number " + destnitionNeuron);
+                    }
+                    else
+                    {
+                        Console.Write("   this connection goes to neuron " + destnitionNeuron);
+                    }
                     double thisValue = neurons[thisNeuron].value;
                     double thisMultyplayer = neurons[thisNeuron].connections[thisConnection].multyplayer;
 
                     Console.WriteLine("   this connections multiplycation is " + thisMultyplayer);
 
                 }
+            }
+            Console.WriteLine("Network Outputs:");
+            for(int thisOutput = 0; thisOutput < outputLayer.Length; ++thisOutput)
+            {
+                Console.WriteLine("Output [" + thisOutput + "]: " + outputLayer[thisOutput].value);
             }
             Console.WriteLine("///////////////");
         }
