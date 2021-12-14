@@ -96,11 +96,20 @@ namespace neuronprog
                 parts[i] = 100;//100 is the dflt value for a part in the gene
             }
         }
-        
 
-        public void print()
+
+    public void print()
+    {
+        Console.Write("{");
+        for (int i = 0; i < parts.Length; ++i)
         {
-            Console.Write("{" + parts[0] + ", " + parts[1] + ", " + parts[2] + "}");
+            Console.Write(parts[i]);
+            if (i != parts.Length - 1)
+            {
+                Console.Write(", ");
+            }
         }
+        Console.Write("}");
     }
+}
 
