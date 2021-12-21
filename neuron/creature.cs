@@ -31,6 +31,7 @@ namespace neuronprog
             network net = new network();
             net.inputNeurons = gnm.genes[0].parts[1];
             net.outputNeurons = gnm.genes[0].parts[2];
+            double thisMultyplayer = 0;
 
             int numOfNeurons = gnm.genes[0].parts[0];
             if (printNetworkCreation)
@@ -67,8 +68,10 @@ namespace neuronprog
                 }
                 for(int thisConnection = buffersLocations[thisNeuron]; thisConnection < buffersLocations[thisNeuron + 1] /*&& thisConnection < gnm.genes.Count*/; ++thisConnection)
                 {
-                    net.neurons[thisNeuron].addConnection(gnm.genes[thisConnection].parts[0], gnm.genes[thisConnection].parts[1]);
-                    if(gnm.genes[thisConnection].parts[2] %2 == 1)
+                    thisMultyplayer = gnm.genes[thisConnection].parts[1];
+                    thisMultyplayer /= 100;
+                    net.neurons[thisNeuron].addConnection(gnm.genes[thisConnection].parts[0], thisMultyplayer);
+                    if(gnm.genes[thisConnection].parts[2] %2 == 1)//goes to the final layer
                     {
                         net.neurons[thisNeuron].connections[net.neurons[thisNeuron].connections.Count - 1].connectedToTheFinalLayer = true;
                     }

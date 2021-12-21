@@ -67,7 +67,8 @@ namespace neuronprog
     }
     class network
     {
-        static bool printNetworkActivity = true;
+        const  bool printNetworkActivity = true;
+        const bool doSigmoid = true;
         public List<neuron> neurons = new List<neuron>();
         public neuron[] outputLayer = new neuron[1];
         public int inputNeurons;
@@ -99,7 +100,7 @@ namespace neuronprog
         }
 
         public void Fire()
-        {
+        {           
             if (printNetworkActivity)
             {
                 Console.WriteLine("fireing the network");
@@ -117,6 +118,14 @@ namespace neuronprog
                     Console.WriteLine("  fureing neuron " + thisNeuron);
                 }
                 //networkDiagnos();//radical step
+                if(doSigmoid)
+                {
+                    if(printNetworkActivity)
+                        Console.Write("The value of neuron " + thisNeuron + " has been sigmofaid from " + neurons[thisNeuron].value);
+                    neurons[thisNeuron].value = 1.0 / (1.0 + Math.Pow(Math.E, -neurons[thisNeuron].value));
+                    if(printNetworkActivity)
+                        Console.WriteLine(" to " + neurons[thisNeuron].value);
+                }
 
                 for (int thisConnection = 0; thisConnection < neurons[thisNeuron].connections.Count; ++thisConnection)
                 {
@@ -192,6 +201,18 @@ namespace neuronprog
                 Console.WriteLine("Output [" + thisOutput + "]: " + outputLayer[thisOutput].value);
             }
             Console.WriteLine("///////////////");
+        }
+
+        public void clear()
+        {
+            for(int thisNeuron = 0; thisNeuron < neurons.Count; ++thisNeuron)
+            {
+                neurons[thisNeuron].value = 0;
+            }
+            for(int thisOutput = 0; thisOutput < outputLayer.Length; ++thisOutput)
+            {
+                outputLayer[thisOutput].value = 0;
+            }
         }
     }
 }
