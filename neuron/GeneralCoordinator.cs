@@ -58,8 +58,7 @@ namespace neuronprog
                 Console.WriteLine("best score of last generation is: " + BEST.Scoer);
                 Console.WriteLine("X: " + BEST.parameters[0]);
                 Console.WriteLine("Y: " + BEST.parameters[1]);
-                //Console.WriteLine("best creature genome: ");
-                //BEST.DNA.print();
+                
 
             }
 

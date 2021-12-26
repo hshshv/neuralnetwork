@@ -10,10 +10,15 @@ namespace neuronprog
         static void Main(string[] args)
         {
             creature winner = Coordinator.evolution(100);
-
+            Console.WriteLine("/n **************** /n");
             Console.WriteLine("final scoer: " + winner.Scoer);
             Console.WriteLine("X: " + winner.parameters[0]);
             Console.WriteLine("Y: " + winner.parameters[1]);
+            Console.WriteLine("best creature genome: ");
+            winner.DNA.print();
+            Console.WriteLine("BEST network:");
+            winner.brian.networkDiagnos();
+
             /*
             genome tst = new genome(3);
             tst.addGenes(7);
