@@ -10,9 +10,9 @@ namespace neuronprog
         public List<gene> genes = new List<gene>();
         public int numberOfPartInEveryGene;
         public int chanceOfMutationForEachPart = 30;
-        public int chanceOfCreatingANewGeneOrDeletingOne = 100;
+        public int chanceOfCreatingANewGene = 200;
+        public int chanceOfDeletingAGene = 220;
         static Random rndm = new Random();
-
 
         public genome(int partPerGene) 
         {
@@ -45,7 +45,7 @@ namespace neuronprog
         }
         public static genome mutate(genome genomeToMutat) //this is used to make a mutated copy of a specific genome
         {
-            genomeToMutat.print();
+            //genomeToMutat.print();
             for (int thisGene = 0; thisGene < genomeToMutat.genes.Count; ++thisGene)
             {
                 for (int thisPartOfTheGene = 0; thisPartOfTheGene < genomeToMutat.genes[thisGene].parts.Length; ++thisPartOfTheGene)
@@ -56,28 +56,28 @@ namespace neuronprog
                     }
                 }
             }
-            if (rndm.Next(0, genomeToMutat.chanceOfCreatingANewGeneOrDeletingOne) == 0)//adding a new gene at a randome location
+            if (rndm.Next(0, genomeToMutat.chanceOfCreatingANewGene) == 0)//adding a new gene at a randome location
             {
                 int addNewGeneAt = rndm.Next(0, genomeToMutat.genes.Count);
                 genomeToMutat.genes.Insert(addNewGeneAt, new gene(genomeToMutat.numberOfPartInEveryGene));
             }
-            if (rndm.Next(0, genomeToMutat.chanceOfCreatingANewGeneOrDeletingOne) == 0)//removing an existing gene at a randome location
+            if (rndm.Next(0, genomeToMutat.chanceOfDeletingAGene) == 0 && genomeToMutat.genes.Count > 1)//removing an existing gene at a randome location
             {
                 genomeToMutat.genes.RemoveAt(rndm.Next(0, genomeToMutat.genes.Count));
             }
-            genomeToMutat.print();
+            //genomeToMutat.print();
 
             return (genomeToMutat);
         }
 
         static int singelMutetedValue(int valueBefor)
         {
+            if(valueBefor == 0)
+            {
+                valueBefor = 1;
+            }
             double tempValueHplder = valueBefor * (rndm.NextDouble() * 2);
             int valueAfter = Convert.ToInt32(tempValueHplder);
-            if (valueAfter == 0)
-            {
-                return (1);
-            }
             return (valueAfter);
         }
 

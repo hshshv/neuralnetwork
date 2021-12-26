@@ -67,20 +67,24 @@ namespace neuronprog
     }
     class network
     {
-        const  bool printNetworkActivity = true;
+        const  bool printNetworkActivity = false;
         const bool doSigmoid = true;
         public List<neuron> neurons = new List<neuron>();
-        public neuron[] outputLayer = new neuron[1];
+        public neuron[] outputLayer = new neuron[4];//צריך איכשהו להגדיר את זה דרך המתזמנן הכללי ולא מכאן
         public int inputNeurons;
         public int outputNeurons;
         public network() 
         {
-            outputLayer[0] = new neuron();
+            for(int thisOutput = 0; thisOutput < outputLayer.Length; ++thisOutput)
+            {
+                outputLayer[thisOutput] = new neuron();
+            }
         }
         public network(int inpNueurons, int outNeurons)
         {
             inputNeurons = inpNueurons;
             outputNeurons = outNeurons;
+            outputLayer = new neuron[4];
         }
 
         public void addNeuron()
@@ -105,7 +109,7 @@ namespace neuronprog
             {
                 Console.WriteLine("fireing the network");
             }
-            outputLayer = new neuron[outputNeurons];
+            //outputLayer = new neuron[outputNeurons];
             for(int i = 0; i < outputLayer.Length; ++i)
             {
                 outputLayer[i] = new neuron();
@@ -133,7 +137,8 @@ namespace neuronprog
                     int destnitionNeuron = neurons[thisNeuron].connections[thisConnection].destenation;
                     double thisValue = neurons[thisNeuron].value;
                     double thisMultyplayer = neurons[thisNeuron].connections[thisConnection].multyplayer;
-                    Console.WriteLine("   fireing throught connection " + thisConnection);
+                    if(printNetworkActivity)
+                        Console.WriteLine("   fireing throught connection " + thisConnection);
                     if(neurons[thisNeuron].connections[thisConnection].connectedToTheFinalLayer)
                     {
                         if (printNetworkActivity)
@@ -202,7 +207,6 @@ namespace neuronprog
             }
             Console.WriteLine("///////////////");
         }
-
         public void clear()
         {
             for(int thisNeuron = 0; thisNeuron < neurons.Count; ++thisNeuron)
@@ -213,6 +217,19 @@ namespace neuronprog
             {
                 outputLayer[thisOutput].value = 0;
             }
+        }
+
+        public int strongestOutput()
+        {
+            int strongestOutputYet = 0;
+            for(int thisOutput = 1; thisOutput < outputLayer.Length; ++thisOutput)
+            {
+                if(outputLayer[thisOutput].value > outputLayer[strongestOutputYet].value)
+                {
+                    strongestOutputYet = thisOutput;
+                }
+            }
+            return (strongestOutputYet);
         }
     }
 }
