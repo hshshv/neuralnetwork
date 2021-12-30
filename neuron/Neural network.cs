@@ -86,8 +86,10 @@ namespace neuronprog
         }
         public void setStatic(double nValue)
         {
-            myType = Static;
+            myType = logical;
             myValue = nValue;
+            doSigmoid();
+            myType = Static;
         }
         public double value()
         {
@@ -107,6 +109,13 @@ namespace neuronprog
                 myValue += addValue;
             }
         }
+        public void doSigmoid()
+        {
+            if(myType != Static)
+            {
+                myValue = 1.0 / (1.0 + Math.Pow(Math.E, -value()));
+            }
+        }
     }
     class network
     {
@@ -116,18 +125,16 @@ namespace neuronprog
         public neuron[] outputLayer = new neuron[Coordinator.numOfOutputs];//צריך איכשהו להגדיר את זה דרך המתזמנן הכללי ולא מכאן
         public int inputNeurons = Coordinator.numOfIntputs;
         public int outputNeurons = Coordinator.numOfOutputs;
-        public network() 
-        {
-            for(int thisOutput = 0; thisOutput < outputLayer.Length; ++thisOutput)
-            {
-                outputLayer[thisOutput] = new neuron(neuron.Output);
-            }
-        }
         public network(int inpNueurons, int outNeurons)
         {
             inputNeurons = inpNueurons;
             outputNeurons = outNeurons;
-            outputLayer = new neuron[4];
+            outputLayer = new neuron[outNeurons];
+            for (int thisOutput = 0; thisOutput < outputLayer.Length; ++thisOutput)
+            {
+                outputLayer[thisOutput] = new neuron(neuron.Output);
+            }
+
         }
 
         public void addNeuron()
@@ -145,7 +152,8 @@ namespace neuronprog
                 Console.WriteLine("fireing the network");
             }
             //outputLayer = new neuron[outputNeurons];
-            for(int i = 0; i < outputLayer.Length; ++i)
+            clear();
+            for (int i = 0; i < outputLayer.Length; ++i)
             {
                 outputLayer[i] = new neuron();
             }
@@ -161,7 +169,7 @@ namespace neuronprog
                 {
                     if(printNetworkActivity)
                         Console.Write("The value of neuron " + thisNeuron + " has been sigmofaid from " + neurons[thisNeuron].value());
-                    neurons[thisNeuron].setValue(1.0 / (1.0 + Math.Pow(Math.E, -neurons[thisNeuron].value())));
+                    neurons[thisNeuron].doSigmoid();
                     if(printNetworkActivity)
                         Console.WriteLine(" to " + neurons[thisNeuron].value());
                 }
@@ -230,9 +238,10 @@ namespace neuronprog
                     double thisMultyplayer = neurons[thisNeuron].connections[thisConnection].multyplayer;
 
                     Console.WriteLine(". multiplycation: " + thisMultyplayer);
-                    printOutput();
+                    
                 }
             }
+            printOutput();
             Console.WriteLine("///////////////");
         }
         public void printOutput()
@@ -254,7 +263,6 @@ namespace neuronprog
                 outputLayer[thisOutput].clear();
             }
         }
-
         public int strongestOutput()
         {
             int strongestOutputYet = 0;
@@ -266,6 +274,17 @@ namespace neuronprog
                 }
             }
             return (strongestOutputYet);
+        }
+        public bool noOutput()
+        {
+            for(int thisOutput = 0; thisOutput < outputLayer.Length; ++thisOutput)
+            {
+                if(outputLayer[thisOutput].isOn())
+                {
+                    return (false);
+                }
+            }
+            return (true);
         }
     }
 }

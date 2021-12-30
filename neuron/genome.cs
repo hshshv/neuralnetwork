@@ -9,9 +9,6 @@ namespace neuronprog
     {
         public List<gene> genes = new List<gene>();
         public int numberOfPartInEveryGene;
-        public int chanceOfMutationForEachPart = 20;
-        public int chanceOfCreatingANewGene = 200;
-        public int chanceOfDeletingAGene = 220;
         static Random rndm = new Random();
 
         public genome(int partPerGene) 
@@ -50,18 +47,18 @@ namespace neuronprog
             {
                 for (int thisPartOfTheGene = 0; thisPartOfTheGene < genomeToMutat.genes[thisGene].parts.Length; ++thisPartOfTheGene)
                 {
-                    if (rndm.Next(0, genomeToMutat.chanceOfMutationForEachPart) == 0)
+                    if (rndm.Next(0, Coordinator.chanceOfMutationForEachPart) == 0)
                     {
                         genomeToMutat.genes[thisGene].parts[thisPartOfTheGene] = singelMutetedValue(genomeToMutat.genes[thisGene].parts[thisPartOfTheGene]);
                     }
                 }
             }
-            if (rndm.Next(0, genomeToMutat.chanceOfCreatingANewGene) == 0)//adding a new gene at a randome location
+            if (rndm.Next(0, Coordinator.chanceOfCreatingANewGene) == 0)//adding a new gene at a randome location
             {
                 int addNewGeneAt = rndm.Next(0, genomeToMutat.genes.Count);
                 genomeToMutat.genes.Insert(addNewGeneAt, new gene(genomeToMutat.numberOfPartInEveryGene));
             }
-            if (rndm.Next(0, genomeToMutat.chanceOfDeletingAGene) == 0 && genomeToMutat.genes.Count > 1)//removing an existing gene at a randome location
+            if (rndm.Next(0, Coordinator.chanceOfDeletingAGene) == 0 && genomeToMutat.genes.Count > 1)//removing an existing gene at a randome location
             {
                 genomeToMutat.genes.RemoveAt(rndm.Next(0, genomeToMutat.genes.Count));
             }

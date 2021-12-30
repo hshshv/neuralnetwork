@@ -6,6 +6,7 @@ namespace neuronprog
 {
     class creature
     {
+        static Random rndm = new Random();
         public genome DNA;
         public network brian;
         private bool thisCreatureIsAlive = true;
@@ -16,7 +17,7 @@ namespace neuronprog
         public davarPoneVeholek bug = new davarPoneVeholek();
         public int fireStrength = Coordinator.initialFireStrength;
         public double Scoer = 0;
-
+        
         public bool alive()
         {
             return (thisCreatureIsAlive);
@@ -47,7 +48,7 @@ namespace neuronprog
                 Console.WriteLine(" nuerons network");
             }
 
-            network net = new network();
+            network net = new network(Coordinator.numOfIntputs, Coordinator.numOfOutputs);
             int numOfNeurons = gnm.genes[0].parts[0];
             //net.inputNeurons = gnm.genes[0].parts[1];/////why why why
             //net.outputNeurons = gnm.genes[0].parts[2];///this is not sapouz to be genetic
@@ -149,6 +150,10 @@ namespace neuronprog
                 {
                     gnm.genes[thisBuffer].parts[1] = neuron.Input;
                 }
+                else if(gnm.genes[thisBuffer].parts[1] != neuron.Input)//currently Im not allowing memory \ static \ output nuerons at all.
+                {
+                    gnm.genes[thisBuffer].parts[1] = neuron.logical;
+                }
             }
             //מתקן מודולו - לא הכרחי אך אסטטי
             for (int thisConnection = numOfNeurons + 1; thisConnection < gnm.genes.Count; ++thisConnection)
@@ -195,25 +200,100 @@ namespace neuronprog
                 case 3: Console.WriteLine("attempted to extingwish the fire a"); break;
             }
         }
-        /*public void step()
+        public double run()
         {
-            brian.clear();
-            brian.neurons[0].value = parameters[0];
-            brian.neurons[1].value = parameters[1];
-            brian.Fire();
-            switch (brian.strongestOutput())
+            return (run(false));
+        }
+        public double run(bool doLifeReport)
+        {
+            double lowestScore = 10000;
+            for (int test = 0; test < Coordinator.testsPerRun; ++test)
             {
-                case 0: break;
-                case 1: break;
-                case 2: break;
-                case 3: break;
-                case 4: break;
-                case 5: break;
-                case 6: break;
-                case 7: break;
-                case 8: break;
-                case 9: break;
+                fireStrength = Coordinator.initialFireStrength;
+                switch (rndm.Next(0, 2))//jini ES!
+                {
+                    case 0: Coordinator.fireX *= -1; break;
+                    case 1: Coordinator.fireY *= -1; break;
+                }
+                
+                
+                bug.reset();
+                for (int step = 0; step < Coordinator.stepsInEveryCreaturesLife; ++step)
+                {
+                    brian.neurons[0].setValue(90 - bug.direction + (180 * Math.Atan((Coordinator.fireY - bug.y) / (Coordinator.fireX - bug.x)) / Math.PI)); // fire from ritght
+                    brian.neurons[1].setValue(180 - brian.neurons[0].value()); // fire form left
+                    brian.neurons[2].setValue(bug.distanceFrom(Coordinator.fireX, Coordinator.fireY));/*1 / (krich.bug.distanceFrom(fireX, fireY) + 0.0001); // heat sensor
+                /*
+                krich.brian.neurons[0].setValue(krich.bug.x);
+                krich.brian.neurons[1].setValue(krich.bug.y);
+                */
+                    brian.Fire();
+                    if (doLifeReport)
+                    {
+                        Console.WriteLine("step " + step);
+                    }
+                    //this multy action thing is gooood
+                    for (int thisOutput = 0; thisOutput < brian.outputNeurons; ++thisOutput)
+                    {
+                        if (brian.outputLayer[thisOutput].isOn())
+                        {
+                            doAction(thisOutput, doLifeReport);
+                        }
+                    }
+                    if (brian.noOutput() && doLifeReport)
+                    {
+                        doAction(brian.strongestOutput(), doLifeReport);
+                    }
+                    if (doLifeReport)
+                    {
+                        bug.print();
+                        Console.WriteLine(". fire strength: " + fireStrength);
+                        Console.WriteLine();
+                    }
+                }
+                calaulateScoer();
+                if(lowestScore > Scoer)
+                {
+                    lowestScore = Scoer;
+                }
+                
             }
-        }*/
+            Scoer = lowestScore;
+            return (Scoer);
+        }
+        public void calaulateScoer()
+        {
+            Scoer = 100 - bug.distanceFrom(Coordinator.fireX, Coordinator.fireY) + 10 * (Coordinator.initialFireStrength - fireStrength);
+        }
+        private void doAction(int actionNumber, bool doLifeReport)
+        {
+            switch(actionNumber)
+            {
+                case 0: bug.turn(10); if (doLifeReport) { Console.WriteLine("\tturned left"); } break;
+                case 1: bug.turn(-10); if (doLifeReport) { Console.WriteLine("\tturned right"); } break;
+                case 2: bug.step(1); if (doLifeReport) { Console.WriteLine("\tstepped forward"); } break;
+                case 3:
+                    if (bug.distanceFrom(Coordinator.fireX, Coordinator.fireY) < Coordinator.minimumDistanceToExtinguishFire)
+                    {
+                        --fireStrength;
+                        if(doLifeReport)
+                        {
+                            Console.Write("I succsessffuullyy exed fire. my location is ");
+                            bug.print();
+                            Console.WriteLine(", which is " + bug.distanceFrom(Coordinator.fireX, Coordinator.fireY) + " units away from the fire, which is in (" + Coordinator.fireX + ", " + Coordinator.fireY + "). the minimum distance to extingwish fire is " + Coordinator.minimumDistanceToExtinguishFire + " units.");
+                        }
+                    }
+                    else
+                    {
+                        //++fireStrength;// creature gets punished for wasting water
+                    }
+                    if (doLifeReport)
+                    {
+                        Console.WriteLine("\tattempted to extingwish the fire (" + Coordinator.fireX + ", " + Coordinator.fireY + ")");
+                        
+                    }
+                    break;
+            }
+        }
     }
 }
