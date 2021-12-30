@@ -9,8 +9,11 @@ namespace neuronprog
     {
         static void Main(string[] args)
         {
-            creature winner = Coordinator.evolution(100);
-            Console.WriteLine("/n **************** /n");
+            //davarPoneVeholek mike = new davarPoneVeholek();
+            //Console.WriteLine(mike.direction + (180 * Math.Atan((20 - mike.y) / (20 - mike.x)) / Math.PI));
+            creature winner = Coordinator.evolution(1000000);
+            Console.ReadKey();
+            /*Console.WriteLine("\n **************** \n");
             Console.WriteLine("final scoer: " + winner.Scoer);
             Console.WriteLine("X: " + winner.parameters[0]);
             Console.WriteLine("Y: " + winner.parameters[1]);

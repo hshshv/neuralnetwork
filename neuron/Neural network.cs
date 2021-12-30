@@ -23,13 +23,25 @@ namespace neuronprog
     }
     class neuron
     {
-        public double value = 0.0;
-        public List<connection> connections = new List<connection>();
-        public string name;
-        public /*actually bool*/ void activate()
-        {
-            //later
+        //neuron typs
+        public const int logical = 0;
+        public const int Input = 1;
+        public const int Static = 2;
+        public const int Memory = 3;
+        public const int Output = 4;
+        public const int nueornTyps = 4;
+        static double activetionLevel = 0.85;
+        public static string[] typeNames = {"logical", "input", "static", "memory", "output" };
+        //end of neuron typs
 
+        private double myValue = 0.0;
+        public List<connection> connections = new List<connection>();
+        private int myType;
+        //public string name;
+
+        public bool isOn()
+        {
+            return (myValue >= activetionLevel);
         }
 
         public neuron(List<connection> cncs)
@@ -40,44 +52,75 @@ namespace neuronprog
                 connections[i] = cncs[i];
             }
         }
-        public neuron(List<connection> cncs, string neuronName) : this(cncs)
+        /*public neuron(List<connection> cncs, string neuronName) : this(cncs)
         {
             name = neuronName;
-        }
+        }*/
 
         public neuron() { }
 
-        public neuron(int destention, double multypliiir)
+        public neuron(int Ntype)
         {
-            connection myconn = new connection(destention, multypliiir);
-            connections.Add(myconn);
+            myType = Ntype % nueornTyps;
         }
 
-        public neuron(int destention, double multypliiir, double initialValue) : this(destention, multypliiir)
+        /*public neuron(int destention, double multypliiir, double initialValue) : this(destention, multypliiir)
         {
             value = initialValue;
-        }
+        }*/
         public void addConnection(int destnetion, double multyplaer)
         {
             connection newConnection = new connection(destnetion, multyplaer);
             connections.Add(newConnection);
         }
-
-
+        public void clear()
+        {
+            if(myType != Static && myType != Input && myType != Memory)
+            {
+                myValue = 0;
+            }
+        }
+        public int type()
+        {
+            return (myType);
+        }
+        public void setStatic(double nValue)
+        {
+            myType = Static;
+            myValue = nValue;
+        }
+        public double value()
+        {
+            return (myValue);
+        }
+        public void setValue(double nValue)
+        {
+            if(myType == Input)
+            {
+                myValue = nValue;
+            }
+        }
+        public void changeValue(double addValue)
+        {
+            if(myType != Input && myType != Static)
+            {
+                myValue += addValue;
+            }
+        }
     }
     class network
     {
-        const  bool printNetworkActivity = false;
+        bool printNetworkActivity = false; //practicly const, not formally cause of the anoyyyyying warnings about unreachable code
         const bool doSigmoid = true;
         public List<neuron> neurons = new List<neuron>();
-        public neuron[] outputLayer = new neuron[4];//צריך איכשהו להגדיר את זה דרך המתזמנן הכללי ולא מכאן
-        public int inputNeurons;
-        public int outputNeurons;
+        public neuron[] outputLayer = new neuron[Coordinator.numOfOutputs];//צריך איכשהו להגדיר את זה דרך המתזמנן הכללי ולא מכאן
+        public int inputNeurons = Coordinator.numOfIntputs;
+        public int outputNeurons = Coordinator.numOfOutputs;
         public network() 
         {
             for(int thisOutput = 0; thisOutput < outputLayer.Length; ++thisOutput)
             {
-                outputLayer[thisOutput] = new neuron();
+                outputLayer[thisOutput] = new neuron(neuron.Output);
             }
         }
         public network(int inpNueurons, int outNeurons)
@@ -91,18 +134,10 @@ namespace neuronprog
         {
             neurons.Add(new neuron());
         }
-        public void addNeuron(int des, double mltp)
+        public void addNeuron(int neuronType)
         {
-            neuron newRon = new neuron(des, mltp);
-            neurons.Add(newRon);
+            neurons.Add(new neuron(neuronType));
         }
-
-        public void addNeuron(int des, double mltp, double initialValue)
-        {
-            neuron newRon = new neuron(des, mltp, initialValue);
-            neurons.Add(newRon);
-        }
-
         public void Fire()
         {           
             if (printNetworkActivity)
@@ -125,36 +160,36 @@ namespace neuronprog
                 if(doSigmoid)
                 {
                     if(printNetworkActivity)
-                        Console.Write("The value of neuron " + thisNeuron + " has been sigmofaid from " + neurons[thisNeuron].value);
-                    neurons[thisNeuron].value = 1.0 / (1.0 + Math.Pow(Math.E, -neurons[thisNeuron].value));
+                        Console.Write("The value of neuron " + thisNeuron + " has been sigmofaid from " + neurons[thisNeuron].value());
+                    neurons[thisNeuron].setValue(1.0 / (1.0 + Math.Pow(Math.E, -neurons[thisNeuron].value())));
                     if(printNetworkActivity)
-                        Console.WriteLine(" to " + neurons[thisNeuron].value);
+                        Console.WriteLine(" to " + neurons[thisNeuron].value());
                 }
 
                 for (int thisConnection = 0; thisConnection < neurons[thisNeuron].connections.Count; ++thisConnection)
                 {
 
                     int destnitionNeuron = neurons[thisNeuron].connections[thisConnection].destenation;
-                    double thisValue = neurons[thisNeuron].value;
+                    double thisValue = neurons[thisNeuron].value();
                     double thisMultyplayer = neurons[thisNeuron].connections[thisConnection].multyplayer;
                     if(printNetworkActivity)
                         Console.WriteLine("   fireing throught connection " + thisConnection);
                     if(neurons[thisNeuron].connections[thisConnection].connectedToTheFinalLayer)
                     {
                         if (printNetworkActivity)
-                            Console.Write("  neuron " + thisNeuron + " outputs " + thisValue + " multyplyed by " + thisMultyplayer + ". output " + destnitionNeuron + " updated from " + outputLayer[destnitionNeuron].value + " to ");
-                        outputLayer[destnitionNeuron].value = outputLayer[destnitionNeuron].value + thisValue * thisMultyplayer;
+                            Console.Write("  neuron " + thisNeuron + " outputs " + thisValue + " multyplyed by " + thisMultyplayer + ". output " + destnitionNeuron + " updated from " + outputLayer[destnitionNeuron].value() + " to ");
+                        outputLayer[destnitionNeuron].changeValue(thisValue * thisMultyplayer);
                         if (printNetworkActivity)
-                            Console.WriteLine(outputLayer[destnitionNeuron].value);
+                            Console.WriteLine(outputLayer[destnitionNeuron].value());
                     }
                     else
                     {
                         if (printNetworkActivity)
-                            Console.Write("  neuron " + thisNeuron + " outputs " + thisValue + " multyplyed by " + thisMultyplayer + ". neuron " + destnitionNeuron + " updated from " + neurons[destnitionNeuron].value + " to ");
+                            Console.Write("  neuron " + thisNeuron + " outputs " + thisValue + " multyplyed by " + thisMultyplayer + ". neuron " + destnitionNeuron + " updated from " + neurons[destnitionNeuron].value() + " to ");
                         
-                        neurons[destnitionNeuron].value = neurons[destnitionNeuron].value + thisValue * thisMultyplayer;
+                        neurons[destnitionNeuron].changeValue(thisValue * thisMultyplayer);
                         if (printNetworkActivity)
-                            Console.WriteLine(neurons[destnitionNeuron].value);
+                            Console.WriteLine(neurons[destnitionNeuron].value());
                     }
                 }
             }
@@ -164,7 +199,7 @@ namespace neuronprog
                 Console.WriteLine("output neurons: ");
                 for (int i = 0; i < outputLayer.Length; ++i)
                 {
-                    Console.WriteLine("output[" + i + "]: " + outputLayer[i].value);
+                    Console.WriteLine("output[" + i + "]: " + outputLayer[i].value());
                 }
 
             }
@@ -176,46 +211,47 @@ namespace neuronprog
             Console.WriteLine("This network has " + neurons.Count + " internal neurons and " + outputNeurons + " outputs");
             for (int thisNeuron = 0; thisNeuron < neurons.Count; ++thisNeuron)
             {
-                Console.WriteLine("  neuron " + thisNeuron);
-                Console.WriteLine("  this neuron contains a value of " + neurons[thisNeuron].value);
-                Console.WriteLine("  this neuron has " + neurons[thisNeuron].connections.Count + " connections");
+                Console.WriteLine("neuron " + thisNeuron + ". type: " + neuron.typeNames[neurons[thisNeuron].type()] + ", value: " + neurons[thisNeuron].value() + ", connections: " + neurons[thisNeuron].connections.Count);
                 for (int thisConnection = 0; thisConnection < neurons[thisNeuron].connections.Count; ++thisConnection)
                 {
-                    Console.WriteLine("   connection " + thisConnection);
+                    Console.Write("\tconnection [" + thisConnection + "]. destenation: ");
 
                     int destnitionNeuron = neurons[thisNeuron].connections[thisConnection].destenation;
                     
                     if(neurons[thisNeuron].connections[thisConnection].connectedToTheFinalLayer)
                     {
-                        Console.Write("   this connection goes to output number " + destnitionNeuron);
+                        Console.Write("output [" + destnitionNeuron + "]");
                     }
                     else
                     {
-                        Console.Write("   this connection goes to neuron " + destnitionNeuron);
+                        Console.Write("neuron [" + destnitionNeuron + "]");
                     }
-                    double thisValue = neurons[thisNeuron].value;
+                    double thisValue = neurons[thisNeuron].value();
                     double thisMultyplayer = neurons[thisNeuron].connections[thisConnection].multyplayer;
 
-                    Console.WriteLine("   this connections multiplycation is " + thisMultyplayer);
-
+                    Console.WriteLine(". multiplycation: " + thisMultyplayer);
+                    printOutput();
                 }
             }
-            Console.WriteLine("Network Outputs:");
-            for(int thisOutput = 0; thisOutput < outputLayer.Length; ++thisOutput)
-            {
-                Console.WriteLine("Output [" + thisOutput + "]: " + outputLayer[thisOutput].value);
-            }
             Console.WriteLine("///////////////");
+        }
+        public void printOutput()
+        {
+            Console.WriteLine("Network Outputs:");
+            for (int thisOutput = 0; thisOutput < outputLayer.Length; ++thisOutput)
+            {
+                Console.WriteLine("Output [" + thisOutput + "]: " + outputLayer[thisOutput].value());
+            }
         }
         public void clear()
         {
             for(int thisNeuron = 0; thisNeuron < neurons.Count; ++thisNeuron)
             {
-                neurons[thisNeuron].value = 0;
+                neurons[thisNeuron].clear();
             }
             for(int thisOutput = 0; thisOutput < outputLayer.Length; ++thisOutput)
             {
-                outputLayer[thisOutput].value = 0;
+                outputLayer[thisOutput].clear();
             }
         }
 
@@ -224,7 +260,7 @@ namespace neuronprog
             int strongestOutputYet = 0;
             for(int thisOutput = 1; thisOutput < outputLayer.Length; ++thisOutput)
             {
-                if(outputLayer[thisOutput].value > outputLayer[strongestOutputYet].value)
+                if(outputLayer[thisOutput].value() > outputLayer[strongestOutputYet].value())
                 {
                     strongestOutputYet = thisOutput;
                 }

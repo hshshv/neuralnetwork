@@ -9,7 +9,7 @@ namespace neuronprog
     {
         public List<gene> genes = new List<gene>();
         public int numberOfPartInEveryGene;
-        public int chanceOfMutationForEachPart = 30;
+        public int chanceOfMutationForEachPart = 20;
         public int chanceOfCreatingANewGene = 200;
         public int chanceOfDeletingAGene = 220;
         static Random rndm = new Random();

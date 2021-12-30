@@ -9,10 +9,12 @@ namespace neuronprog
         public genome DNA;
         public network brian;
         private bool thisCreatureIsAlive = true;
-        public int inputs = 2;//צריך שזה ייקבע איכשהו דרך המנהלתזמנן הכללי ולא מכאן
-        public int outputs = 4;//כנל
+        public int inputs = Coordinator.numOfIntputs;
+        public int outputs = Coordinator.numOfOutputs;
         
-        public int[] parameters = new int[10];
+        public int[] parameters = new int[Coordinator.numOfParameters];
+        public davarPoneVeholek bug = new davarPoneVeholek();
+        public int fireStrength = Coordinator.initialFireStrength;
         public double Scoer = 0;
 
         public bool alive()
@@ -32,7 +34,6 @@ namespace neuronprog
             }
             DNA = dna;
         }
-
         public static network getNetworkFromGenome(genome gnm)
         {
             bool printNetworkCreation = false;
@@ -48,8 +49,8 @@ namespace neuronprog
 
             network net = new network();
             int numOfNeurons = gnm.genes[0].parts[0];
-            net.inputNeurons = gnm.genes[0].parts[1];
-            net.outputNeurons = gnm.genes[0].parts[2];
+            //net.inputNeurons = gnm.genes[0].parts[1];/////why why why
+            //net.outputNeurons = gnm.genes[0].parts[2];///this is not sapouz to be genetic
             double thisMultyplayer = 0;
             
             
@@ -71,16 +72,19 @@ namespace neuronprog
             }
             for (int thisNeuron = 0; thisNeuron < numOfNeurons; ++thisNeuron)
             {
-                net.addNeuron();
+                net.addNeuron(gnm.genes[thisNeuron + 1].parts[1]);
+                if(gnm.genes[thisNeuron + 1].parts[1] == neuron.Static)
+                {
+                    net.neurons[thisNeuron].setStatic(gnm.genes[thisNeuron + 1].parts[2]);
+                }
                 if (printNetworkCreation)
                 {
-                    Console.Write("networkGen: neuron added. tatal num of nrns is now: ");
-                    Console.WriteLine(net.neurons.Count);
+                    Console.WriteLine("networkGen: neuron added. tatal num of nrns is now: " + net.neurons.Count);
                 }
                 for(int thisConnection = buffersLocations[thisNeuron]; thisConnection < buffersLocations[thisNeuron + 1] /*&& thisConnection < gnm.genes.Count*/; ++thisConnection)
                 {
                     thisMultyplayer = gnm.genes[thisConnection].parts[1];
-                    thisMultyplayer /= 100;
+                    thisMultyplayer /= 10;
                     net.neurons[thisNeuron].addConnection(gnm.genes[thisConnection].parts[0], thisMultyplayer);
                     if(gnm.genes[thisConnection].parts[2] %2 == 1)//goes to the final layer
                     {
@@ -141,9 +145,13 @@ namespace neuronprog
                     }
                 }
                 buffersLocations.Add(gnm.genes[thisBuffer].parts[0]);
+                if(thisBuffer < Coordinator.numOfIntputs)
+                {
+                    gnm.genes[thisBuffer].parts[1] = neuron.Input;
+                }
             }
             //מתקן מודולו - לא הכרחי אך אסטטי
-            for(int thisConnection = numOfNeurons + 1; thisConnection < gnm.genes.Count; ++thisConnection)
+            for (int thisConnection = numOfNeurons + 1; thisConnection < gnm.genes.Count; ++thisConnection)
             {
                 //Console.WriteLine("checking destenations. total outputs is: " + outputs + ", total neurons is: " + numOfNeurons);
                 if(gnm.genes[thisConnection].parts[2] % 2 == 1 /*goes to the final layer*/)
@@ -163,7 +171,6 @@ namespace neuronprog
             }
             return true;
         }
-
         public void TransformInto(creature crt)
         {
             DNA = crt.DNA;
@@ -176,10 +183,25 @@ namespace neuronprog
             thisCreatureIsAlive = false;
             //Console.WriteLine("creature.kill()");
         }
-
-       /* void doOperation(int operationID)
+        public void printStatus()
         {
-            switch(operationID)
+            bug.print();
+            Console.Write(". I just ");
+            switch (brian.strongestOutput())
+            {
+                case 0: Console.WriteLine("turned lefta") ; break;
+                case 1: Console.WriteLine("turned righta"); break;
+                case 2: Console.WriteLine("stepped forwarda"); break;
+                case 3: Console.WriteLine("attempted to extingwish the fire a"); break;
+            }
+        }
+        /*public void step()
+        {
+            brian.clear();
+            brian.neurons[0].value = parameters[0];
+            brian.neurons[1].value = parameters[1];
+            brian.Fire();
+            switch (brian.strongestOutput())
             {
                 case 0: break;
                 case 1: break;
