@@ -37,6 +37,7 @@ namespace neuronprog
         private double myValue = 0.0;
         public List<connection> connections = new List<connection>();
         private int myType;
+        public bool RecivedInfo = false;
         //public string name;
 
         public bool isOn()
@@ -62,6 +63,14 @@ namespace neuronprog
         public neuron(int Ntype)
         {
             myType = Ntype % nueornTyps;
+            if(myType == Static || myType == Input)
+            {
+                RecivedInfo = true;
+            }
+            else
+            {
+                RecivedInfo = false;
+            }
         }
 
         /*public neuron(int destention, double multypliiir, double initialValue) : this(destention, multypliiir)
@@ -73,16 +82,32 @@ namespace neuronprog
             connection newConnection = new connection(destnetion, multyplaer);
             connections.Add(newConnection);
         }
-        public void clear()
+        public void clear(bool clearMemory)
         {
-            if(myType != Static && myType != Input && myType != Memory)
+            if(myType != Static && myType != Input && myType != Memory)//memory neurons will also remember if they'v been fired at or not
+            {
+                RecivedInfo = false;
+            }
+            if (myType != Static && myType != Input && (myType != Memory || clearMemory))
             {
                 myValue = 0;
             }
         }
+        public void clear()
+        {
+            clear(false);
+        }
         public int type()
         {
             return (myType);
+        }
+        public bool isAnInputer()
+        {
+            return (myType == Input || myType == Static);
+        }
+        public bool needsInfo()//nrns that requier info from privius nrns in order to fire the next nrns (so nrns
+        {
+            return (myType == logical || myType == Memory);
         }
         public void setStatic(double nValue)
         {
@@ -107,6 +132,7 @@ namespace neuronprog
             if(myType != Input && myType != Static)
             {
                 myValue += addValue;
+                RecivedInfo = true;
             }
         }
         public void doSigmoid()
@@ -136,7 +162,6 @@ namespace neuronprog
             }
 
         }
-
         public void addNeuron()
         {
             neurons.Add(new neuron());
@@ -160,11 +185,19 @@ namespace neuronprog
 
             for (int thisNeuron = 0; thisNeuron < neurons.Count; ++thisNeuron)
             {
+                if(!neurons[thisNeuron].RecivedInfo && neurons[thisNeuron].needsInfo())
+                {
+                    if(printNetworkActivity)
+                    {
+                        Console.WriteLine("  neuron " + thisNeuron + " didn't recived any information from the previous neurons, so it wont fire");
+                        continue;
+                    }
+                }
                 if (printNetworkActivity)
                 {
                     Console.WriteLine("  fureing neuron " + thisNeuron);
                 }
-                //networkDiagnos();//radical step
+                
                 if(doSigmoid)
                 {
                     if(printNetworkActivity)
@@ -252,7 +285,7 @@ namespace neuronprog
                 Console.WriteLine("Output [" + thisOutput + "]: " + outputLayer[thisOutput].value());
             }
         }
-        public void clear()
+        public void clear(bool clearMemory)
         {
             for(int thisNeuron = 0; thisNeuron < neurons.Count; ++thisNeuron)
             {
@@ -262,6 +295,14 @@ namespace neuronprog
             {
                 outputLayer[thisOutput].clear();
             }
+        }
+        public void clear()
+        {
+            clear(false);
+        }
+        public void reset()
+        {
+            clear(true);
         }
         public int strongestOutput()
         {
@@ -286,5 +327,13 @@ namespace neuronprog
             }
             return (true);
         }
+        /*public void killEmptyConnections()
+        {
+            for(int thisNeuron = 0; thisNeuron < neurons.Count; ++thisNeuron)
+            {
+                for(int thisConnection = 0;thisConnection < neurons[thisNeuron].connections.Count; ++thisConnection)
+            }
+        }*/
+
     }
 }

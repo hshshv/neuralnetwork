@@ -62,9 +62,15 @@ namespace neuronprog
             x = 0;
             y = 0;
         }
-        
-        /*
-         * public double directionOf(targetX, targetY){}
-         */
+        public double directionTo(double targetX, double targetY)
+        {
+            double theDirection = 180 * Math.Atan((targetY - y) / (targetX - x)) / Math.PI;
+            if(x > targetX)
+            {
+                theDirection += 180;
+            }
+            return (theDirection % 360);
+        }
+    
     }
 }

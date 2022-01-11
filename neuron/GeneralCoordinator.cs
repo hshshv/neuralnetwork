@@ -10,9 +10,9 @@ namespace neuronprog
         public const int lenghtOfOriginalDNA = 15;
         public const int numOfCreatursInEachGeneration = 300;
         public const int stepsInEveryCreaturesLife = 40;
-        public const int numOfIntputs = 3;
+        public const int numOfIntputs = 4;//
         public const int numOfOutputs = 4;
-        public const int numOfParameters = 10;
+        public const int numOfParameters = 0;
         public static int fireX = 20;
         public static int fireY = 20;
         public const int minimumDistanceToExtinguishFire = 5;
@@ -20,8 +20,9 @@ namespace neuronprog
         public const int chanceOfMutationForEachPart = 20;
         public const int chanceOfCreatingANewGene = 200;
         public const int chanceOfDeletingAGene = 210;
-        public const bool alawaysUseTheBestEverCreatureForTheNextGeneration = false;
-        public const int testsPerRun = 2;
+        public static bool alawaysUseTheBestEverCreatureForTheNextGeneration = true;
+        public static bool punishWaterWaste = false;
+        public const int testsPerRun = 3;
         //end of settings
         static Random rndm = new Random();
         public static creature evolution(int generationsToEvolveIfThatIsHowYouSpellIt)
@@ -60,6 +61,10 @@ namespace neuronprog
                     lastBest.TransformInto(BEST);
                     Console.WriteLine("generetion [" + generatioNumber + "] got a new high score: " + BEST.Scoer + ". [X: " + BEST.bug.x + ", Y: " + BEST.bug.y + "]. stars: " + (initialFireStrength - BEST.fireStrength) + ". genome length: " + BEST.DNA.genes.Count + " genes");
                     //BEST.run(true);
+                    if(BEST.Scoer > 100 - minimumDistanceToExtinguishFire)
+                    {
+                        //alawaysUseTheBestEverCreatureForTheNextGeneration = false;
+                    }
                     if (initialFireStrength - BEST.fireStrength >= 3)
                     {
                         while (true)
@@ -90,6 +95,22 @@ namespace neuronprog
                 }
             }
             return (Hador.population[biggestScoerCreture]);
+        }
+        public static void printEvoSetting()
+        {
+            Console.WriteLine("evo setting:");
+            Console.WriteLine("\tlegnth of original dna: " + lenghtOfOriginalDNA);
+            Console.WriteLine("\tnum of creature in each generation: " + numOfCreatursInEachGeneration);
+            Console.WriteLine("\tsteps in every creaturs life: " + stepsInEveryCreaturesLife);
+            Console.WriteLine("\tlife cycles of avery creature: " + testsPerRun);
+            Console.WriteLine("\t inputs: " + numOfIntputs + ", outputs: " + numOfOutputs);
+            Console.WriteLine("\tnum of creature parameters: " + numOfParameters);
+            Console.WriteLine("\tinitial fire location: X=" + fireX + ", y=" + fireY);
+            Console.WriteLine("\tinitial fire strength: " + initialFireStrength);
+            Console.WriteLine("\tminimum distance to extinguish fire: " + minimumDistanceToExtinguishFire);
+            Console.WriteLine("\tchance of a mutetion: 1/" + chanceOfMutationForEachPart + ", chance for a new gene: 1/" + chanceOfCreatingANewGene + ", chance of deletinig a gene: 1/" + chanceOfDeletingAGene);
+            Console.WriteLine("\talways evolve the highest scoring creature of all times: " + alawaysUseTheBestEverCreatureForTheNextGeneration);
+            Console.WriteLine("\tpunish water wast: " + punishWaterWaste);
         }
     }
 
