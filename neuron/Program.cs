@@ -10,9 +10,9 @@ namespace neuronprog
         static void Main(string[] args)
         {
             //Console.WriteLine(mike.direction + (180 * Math.Atan((20 - mike.y) / (20 - mike.x)) / Math.PI));
-            Coordinator.printEvoSetting();
-            creature winner = Coordinator.evolution(1000000);
-            Console.ReadKey();
+            //Coordinator.printEvoSetting();
+            //creature winner = Coordinator.evolution(1000000);
+            //Console.ReadKey();
             /*Console.WriteLine("\n **************** \n");
             Console.WriteLine("final scoer: " + winner.Scoer);
             Console.WriteLine("X: " + winner.parameters[0]);
@@ -21,21 +21,32 @@ namespace neuronprog
             winner.DNA.print();
             Console.WriteLine("BEST network:");
             winner.brian.networkDiagnos();
+            */
+            
+            genome tst = new genome(3);
+            tst.addGenes(12);
+            
+            tst.genes[0].parts = new int[] { 5, 1, 1 };//num of nuerons (excluding the outputa), num of inputs, num of outputs;
+            
+            tst.genes[1].parts = new int[] { 6, neuron.Input, 0 };
+            tst.genes[2].parts = new int[] { 8, neuron.logical, 0 };
+            tst.genes[3].parts = new int[] { 9, neuron.logical, 0 };
+            tst.genes[4].parts = new int[] { 10, neuron.logical, 0 };
+            tst.genes[5].parts = new int[] { 11, neuron.logical, 0 };
+
+            tst.genes[6].parts = new int[] { 1, 50, 0 }; //connection: to neuron 2, muultiply by 80, not to the output
+            tst.genes[7].parts = new int[] { 3, 50, 0 };
+            tst.genes[8].parts = new int[] { 2, 50, 0 }; //connrction: to nueron 0, mltply 50, connected to the final layer (%2 == 1)
+            tst.genes[9].parts = new int[] { 1, 50, 0 }; //connection: to neuron 2, muultiply by 80, not to the output
+            tst.genes[10].parts = new int[] { 4, 50, 0 };
+            tst.genes[11].parts = new int[] { 0, 50, 1 };
+
+            //tst.transformInto(genome.cleanVersionOf(tst));
+            tst.clean();
+            Console.WriteLine("clean:");
+            tst.print();
 
             /*
-            genome tst = new genome(3);
-            tst.addGenes(7);
-            
-            tst.genes[0].parts = new int[] { 3, 2, 1 };//num ofnuerons (excluding the outputa), num of inputs, num of outputs;
-            
-            tst.genes[1].parts = new int[] { 4, 0, 0 };
-            tst.genes[2].parts = new int[] { 5, 0, 0 };
-            tst.genes[3].parts = new int[] { 6, 0, 0 };
-            
-            tst.genes[4].parts = new int[] { 2, 80, 0 }; //connection: to neuron 2, muultiply by 80, not to the output
-            tst.genes[5].parts = new int[] { 2, 40, 0 };
-            tst.genes[6].parts = new int[] { 0, 50, 1 }; //connrction: to nueron 0, mltply 50, connected to the final layer (%2 == 1)
-            
             //creature tstcrt = new creature(tst);
             network tstnt = creature.getNetworkFromGenome(tst);
 
