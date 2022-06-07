@@ -27,7 +27,7 @@ namespace neuronprog
         }
         public creature(genome dna)
         {
-            if(thisGenomeIsLegit(ref dna))
+            if(thisGenomeIsLegit(dna))
             {
                 brian = getNetworkFromGenome(dna);
             }
@@ -148,8 +148,9 @@ namespace neuronprog
             }
             return false;
         }*/
-        bool thisGenomeIsLegit(ref genome gnm)
+        public static bool thisGenomeIsLegit(genome gnm) //AKA officer G (enforces some structure on the randome genome)//לבדוק האם יש התנגשויות בטווחים שגורמות לקשרים שונים להיות משוייכים לאותם נרנרים
         {
+            //null filtering
             try
             {
                 if (gnm.genes[0].parts[0] == 0) { }
@@ -166,10 +167,10 @@ namespace neuronprog
                 return false;
             }
 
-            
-            if(gnm.genes[0].parts[0] < inputs)
+            //inputs coordinating
+            if(gnm.genes[0].parts[0] < Coordinator.numOfIntputs)
             {
-                gnm.genes[0].parts[0] = inputs;
+                gnm.genes[0].parts[0] = Coordinator.numOfIntputs;
                 //return false;
             }
             int numOfNeurons = gnm.genes[0].parts[0];
@@ -177,6 +178,11 @@ namespace neuronprog
             {
                 return false;
             }
+
+            //buffers area
+
+            gnm.genes[1].parts[genome.bufferStart] = gnm.genes[0].parts[0] + 1; // making suree we are not skipping any connections
+
             List<int> buffersLocations = new List<int>();
             for(int thisBuffer = 1; thisBuffer < numOfNeurons + 1; ++thisBuffer)
             {
@@ -207,6 +213,22 @@ namespace neuronprog
                     gnm.genes[thisBuffer].parts[genome.neuronType] = neuron.logical;
                 }
             }
+            gnm.genes[0].parts[2] = Coordinator.numOfOutputs;
+            if (gnm.genes[0].parts[2] <= 0)
+            {
+                int highestPointerToOutput = 0;
+                for(int thisConnection = gnm.genes[0].parts[0]; thisConnection < gnm.genes.Count; ++thisConnection)
+                {
+                    if(gnm.genes[thisConnection].parts[genome.externalOrInternal] == genome.externalNueron)
+                    {
+                        if(gnm.genes[thisConnection].parts[genome.destenetion] > highestPointerToOutput)
+                        {
+                            highestPointerToOutput = gnm.genes[thisConnection].parts[genome.destenetion];
+                        }
+                    }
+                }
+                gnm.genes[0].parts[2] = highestPointerToOutput + 1;
+            }
             //מתקן מודולו - לא הכרחי אך אסטטי
             //bool thisIsTheOnlyConnectionInTheNeuron;
             for (int thisConnection = numOfNeurons + 1; thisConnection < gnm.genes.Count; ++thisConnection)
@@ -214,7 +236,7 @@ namespace neuronprog
                 if(gnm.genes[thisConnection].parts[genome.externalOrInternal] % 2 == genome.externalNueron)
                 {
                     gnm.genes[thisConnection].parts[genome.externalOrInternal] = genome.externalNueron;
-                    gnm.genes[thisConnection].parts[genome.destenetion] = gnm.genes[thisConnection].parts[genome.destenetion] % outputs;
+                    gnm.genes[thisConnection].parts[genome.destenetion] = gnm.genes[thisConnection].parts[genome.destenetion] % gnm.genes[0].parts[2];
                 }
                 else
                 {
@@ -279,6 +301,7 @@ namespace neuronprog
             double lowestScore = 10000;
             for (int test = 0; test < Coordinator.testsPerRun; ++test)
             {
+                if (doLifeReport) { Console.WriteLine("***test " + test + " out of " + Coordinator.testsPerRun); }
                 fireStrength = Coordinator.initialFireStrength;
                 switch (rndm.Next(0, 2))//jini ES!
                 {

@@ -67,13 +67,30 @@ namespace neuronprog
                     }
                     if (initialFireStrength - BEST.fireStrength >= 3)
                     {
+                        
+                        Console.WriteLine("a very good creture evolved");
+                        //BEST.brian.networkDiagnos();
+                        Console.WriteLine("cleaning genome and repeting life run");
+                        Console.WriteLine("BEST gnm cleaning:\ndirty:");
+                        BEST.DNA.print();
+                        Console.WriteLine("clean:");
+                        creature CLEANEST = new creature(BEST.DNA);
+                        CLEANEST.DNA.clean();
+                        CLEANEST.DNA.print();
+                        network cleanBrain = creature.getNetworkFromGenome(BEST.DNA);
+                        CLEANEST.brian.networkDiagnos();
+                        
                         while (true)
                         {
-                            BEST.brian.networkDiagnos();
-                            BEST.run(true);
-                            Console.WriteLine("press any key to continue");
+                            CLEANEST.run(false);
+                            Console.WriteLine("cleanest score: " + CLEANEST.Scoer + ". location: [" + CLEANEST.bug.x + "," + CLEANEST.bug.y + "]. fire location: x = " + Coordinator.fireX + ", y = " + Coordinator.fireY);
+                            BEST.run(false);
+                            Console.WriteLine("best score: " + BEST.Scoer + ". location: [" + BEST.bug.x + "," + BEST.bug.y + "]. fire location: x = " + Coordinator.fireX + ", y = " + Coordinator.fireY);
+
+                            Console.WriteLine("press any key to repet run");
                             Console.ReadKey();
                         }
+
                     }
                 }
             }

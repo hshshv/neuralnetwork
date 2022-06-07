@@ -10,10 +10,10 @@ namespace neuronprog
         static void Main(string[] args)
         {
             //Console.WriteLine(mike.direction + (180 * Math.Atan((20 - mike.y) / (20 - mike.x)) / Math.PI));
-            //Coordinator.printEvoSetting();
-            //creature winner = Coordinator.evolution(1000000);
-            //Console.ReadKey();
-            /*Console.WriteLine("\n **************** \n");
+            Coordinator.printEvoSetting();
+            creature winner = Coordinator.evolution(1000000);
+            Console.ReadKey();
+            Console.WriteLine("\n **************** \n");
             Console.WriteLine("final scoer: " + winner.Scoer);
             Console.WriteLine("X: " + winner.parameters[0]);
             Console.WriteLine("Y: " + winner.parameters[1]);
@@ -21,8 +21,8 @@ namespace neuronprog
             winner.DNA.print();
             Console.WriteLine("BEST network:");
             winner.brian.networkDiagnos();
-            */
             
+            /*
             genome tst = new genome(3);
             tst.addGenes(12);
             
@@ -47,7 +47,7 @@ namespace neuronprog
             tst.print();
 
             /*
-            //creature tstcrt = new creature(tst);
+            creature tstcrt = new creature(tst);
             network tstnt = creature.getNetworkFromGenome(tst);
 
             tstnt.neurons[0].value = 5;
