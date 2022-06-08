@@ -14,7 +14,6 @@ namespace neuronprog
             destenation = des;
             multyplayer = mlty;
         }
-
         public connection()
         {
             destenation = 0;
@@ -137,6 +136,10 @@ namespace neuronprog
         }
         public void doSigmoid()
         {
+            if(myValue == 0)
+            {
+                return;
+            }
             if(myType != Static)
             {
                 myValue = 1.0 / (1.0 + Math.Pow(Math.E, -value()));

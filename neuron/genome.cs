@@ -48,6 +48,7 @@ namespace neuronprog
         {
             for (int i = 0; i < genes.Count; ++i)
             {
+                Console.Write("[" + i + "] ");
                 genes[i].print();
                 Console.WriteLine();
             }
@@ -124,7 +125,7 @@ namespace neuronprog
             }
             for (int thisNeuronLocation = 1; thisNeuronLocation <= dirty.genes[0].parts[0]; ++thisNeuronLocation)//checks branches
             {
-                geneEffectsOutput[thisNeuronLocation] = thisNeuroneffectsTheOutput(dirty, /*ref*/ geneEffectsOutput, thisNeuronLocation);
+                geneEffectsOutput[thisNeuronLocation] = thisNeuroneffectsTheOutput(geneEffectsOutput, thisNeuronLocation);
                 /*
                 firstConnection = dirty.firstConnectionOfNeuron(thisNeuronLocation - 1);
                 lastConnection = dirty.lastConnectionOfNeuron(thisNeuronLocation - 1);
@@ -144,13 +145,32 @@ namespace neuronprog
             }
 
             /* IM HERE */ /*attract error text;*/
+            /*if(false)
+            {
+                Console.WriteLine("///thing. these are the neurons:");
+                for(int thisNeuronLocation = 1; thisNeuronLocation <= dirty.genes[0].parts[0]; ++thisNeuronLocation)
+                {
+                    Console.Write("[" + thisNeuronLocation + "]: ");
+                    if (geneEffectedByInput[thisNeuronLocation])
+                        Console.Write("effected by input, ");
+                    else
+                        Console.Write("isnt effected by input, ");
+                    if(geneEffectsOutput[thisNeuronLocation] == thingThatEffectsOutput)
+                        Console.Write("effects the output");
+                    else
+                        Console.Write("does not effect the output");
+                    Console.WriteLine();
+                }
+                Console.WriteLine("////endthing");
+            }*/
+
             genome clean = new genome(dirty.genes[0].parts.Length);
             clean.addGene(dirty.genes[0]);
             List<int> thisManyNeuronsHaveBeenDeletedBeforeNeuronNumber = new List<int>();
             int neuronsDeletedSoFar = 0;
             for (int thisNeuronLocation = 1; thisNeuronLocation <= dirty.genes[0].parts[0]; ++thisNeuronLocation)//copys importent neurons
             {
-                if (geneEffectedByInput[thisNeuronLocation] == true && geneEffectsOutput[thisNeuronLocation] == thingThatEffectsOutput)
+                if ((geneEffectedByInput[thisNeuronLocation] == true && geneEffectsOutput[thisNeuronLocation] == thingThatEffectsOutput) || dirty.genes[thisNeuronLocation].parts[neuronType] == neuron.Input/*so we wont delet unused inputs*/)
                 {
                     clean.addGene(dirty.genes[thisNeuronLocation]);
                 }
@@ -219,88 +239,96 @@ namespace neuronprog
                 }
             }
             return (clean);
-        }
-        public static void fireThisNeuron(genome gnm, bool[] geneEffectedByInput, int thisNeuronLocation)
-        {
-            if(geneEffectedByInput[thisNeuronLocation])
+            int thisNeuroneffectsTheOutput(int[] geneEffectingOutput, int thisNeuronLocation)
             {
-                //Console.WriteLine("gene " + thisNeuronLocation + " was alredy fired");
-                return;
-            }
-            geneEffectedByInput[thisNeuronLocation] = true;
-            //Console.WriteLine("gene " + thisNeuronLocation + " was fired");
-
-            int firstConnection = gnm.firstConnectionOfNeuron(thisNeuronLocation - 1);
-            int lastConnection = gnm.lastConnectionOfNeuron(thisNeuronLocation - 1);
-            int destenationLocation = 0;
-            int destenationNeuronType = 0;
-            
-            for (int thisConnectionLocation = firstConnection; thisConnectionLocation <= lastConnection; ++thisConnectionLocation)
-            {
-                geneEffectedByInput[thisConnectionLocation] = true;
-
-                destenationLocation = gnm.genes[thisConnectionLocation].parts[destenetion] + 1;
-                destenationNeuronType = gnm.genes[destenationLocation].parts[neuronType];
-                
-                if (gnm.genes[thisConnectionLocation].parts[externalOrInternal] == externalNueron)
+                //Console.WriteLine("this neouron effects output");
+                if (geneEffectingOutput[thisNeuronLocation] != 0)
                 {
-                    //Console.WriteLine("I wont fire gene " + destenationLocation + " because it leads to the output layer");
-                    continue;
+                    return (geneEffectingOutput[thisNeuronLocation]);
                 }
-                if (destenationNeuronType == neuron.Static || destenationNeuronType == neuron.Input)
-                {
-                    //Console.WriteLine("I wont fire gene " + destenationLocation + " because it is pointing to a static or input neuron");
-                    continue;
-                }
-                if (gnm.genes[thisConnectionLocation].parts[multyplayer] == 0)
-                {
-                    //Console.WriteLine("I wont fire gene " + destenationLocation + " because the multyplayer from gene " + thisNeuronLocation + " (gene " + thisConnectionLocation + ") is 0");
 
-                    continue;
-                }  
-                //Console.WriteLine("Im in gene " + thisNeuronLocation + " (neuron). imma baoto fire through gene " + thisConnectionLocation + " which leads to gene " + destenationLocation)
-                fireThisNeuron(gnm, geneEffectedByInput, destenationLocation); 
-            }
-        }
-        public static int thisNeuroneffectsTheOutput(genome gnm, /*ref*/ int[] geneEffectingOutput, int thisNeuronLocation)
-        {
-            //Console.WriteLine("this neouron effects output");
-            if(geneEffectingOutput[thisNeuronLocation] != 0)
-            {
-                return (geneEffectingOutput[thisNeuronLocation]);
-            }
-            geneEffectingOutput[thisNeuronLocation] = thingInCheck;
+                geneEffectingOutput[thisNeuronLocation] = thingInCheck;
 
-            int firstConnection = gnm.firstConnectionOfNeuron(thisNeuronLocation - 1);
-            int lastConnection = gnm.lastConnectionOfNeuron(thisNeuronLocation - 1);
-            for (int thisConnectionLocation = firstConnection; thisConnectionLocation <= lastConnection; ++thisConnectionLocation)
-            {
-                if(gnm.genes[thisConnectionLocation].parts[multyplayer] == 0)
+                int firstConnection = dirty.firstConnectionOfNeuron(thisNeuronLocation - 1);
+                int lastConnection = dirty.lastConnectionOfNeuron(thisNeuronLocation - 1);
+                for (int thisConnectionLocation = firstConnection; thisConnectionLocation <= lastConnection; ++thisConnectionLocation)
                 {
-                    geneEffectingOutput[thisConnectionLocation] = thingThatDoesNotEffectsOutput;
-                    continue;
-                }
-               // if(gnm.genes[gnm.genes[thisConnection].parts[destenetion] + 1].parts[externalOrInternal] == externalNueron || thisneuroneffectsTheOutput(ref gnm, ref effectingOutput, gnm.genes[thisConnection].parts[destenetion] + 1) == thingThatsEffectsOutput)
-                if(gnm.genes[thisConnectionLocation].parts[externalOrInternal] == externalNueron)
-                {
-                    geneEffectingOutput[thisConnectionLocation] = thingThatEffectsOutput;
-                    geneEffectingOutput[thisNeuronLocation] = thingThatEffectsOutput;
-                }
-                //Console.WriteLine("imabawto check whther gene " + (gnm.genes[thisConnectionLocation].parts[destenetion] + 1) + " effects the output or not");
-                else if (geneEffectingOutput[gnm.genes[thisConnectionLocation].parts[destenetion] + 1] != thingInCheck)
-                {
-                    if (thisNeuroneffectsTheOutput(gnm, /*ref*/ geneEffectingOutput, gnm.genes[thisConnectionLocation].parts[destenetion] + 1) == thingThatEffectsOutput)
+                    if (dirty.genes[thisConnectionLocation].parts[multyplayer] == 0)
                     {
-                        if(gnm.genes[thisConnectionLocation].parts[multyplayer] != 0) //this line is sketchy cause I just plonked this 'if' here to prevent approving of 0-multip connection, not sure its the right place to do it
-                        {
-                            geneEffectingOutput[thisConnectionLocation] = thingThatEffectsOutput;
-                        }
+                        geneEffectingOutput[thisConnectionLocation] = thingThatDoesNotEffectsOutput;
+                        continue;
+                    }
+                    // if(gnm.genes[gnm.genes[thisConnection].parts[destenetion] + 1].parts[externalOrInternal] == externalNueron || thisneuroneffectsTheOutput(ref gnm, ref effectingOutput, gnm.genes[thisConnection].parts[destenetion] + 1) == thingThatsEffectsOutput)
+                    if (dirty.genes[thisConnectionLocation].parts[externalOrInternal] == externalNueron)
+                    {
+                        geneEffectingOutput[thisConnectionLocation] = thingThatEffectsOutput;
                         geneEffectingOutput[thisNeuronLocation] = thingThatEffectsOutput;
                     }
+                    //Console.WriteLine("imabawto check whther gene " + (gnm.genes[thisConnectionLocation].parts[destenetion] + 1) + " effects the output or not");
+                    else if (geneEffectingOutput[dirty.genes[thisConnectionLocation].parts[destenetion] + 1] != thingInCheck)
+                    {
+                        if (dirty.genes[dirty.genes[thisConnectionLocation].parts[destenetion] + 1].parts[neuronType] != neuron.Static)
+                        {
+                            if (thisNeuroneffectsTheOutput(geneEffectingOutput, dirty.genes[thisConnectionLocation].parts[destenetion] + 1) == thingThatEffectsOutput)
+                            {
+                                if (dirty.genes[thisConnectionLocation].parts[multyplayer] != 0) //this line is sketchy cause I just plonked this 'if' here to prevent approving of 0-multip connection, not sure its the right place to do it
+                                {
+                                    geneEffectingOutput[thisConnectionLocation] = thingThatEffectsOutput;
+                                }
+                                geneEffectingOutput[thisNeuronLocation] = thingThatEffectsOutput;
+                            }
+                        }
+                        else
+                        {
+                            geneEffectingOutput[thisConnectionLocation] = thingThatDoesNotEffectsOutput;
+                        }
+                    }
+                }
+                return (geneEffectingOutput[thisNeuronLocation]);
+            }
+            void fireThisNeuron(genome gnm, bool[] geneEffectedByInput, int thisNeuronLocation)
+            {
+                if (geneEffectedByInput[thisNeuronLocation])
+                {
+                    //Console.WriteLine("gene " + thisNeuronLocation + " was alredy fired");
+                    return;
+                }
+                geneEffectedByInput[thisNeuronLocation] = true;
+                //Console.WriteLine("gene " + thisNeuronLocation + " was fired");
+
+                int firstConnection = gnm.firstConnectionOfNeuron(thisNeuronLocation - 1);
+                int lastConnection = gnm.lastConnectionOfNeuron(thisNeuronLocation - 1);
+                int destenationLocation = 0;
+                int destenationNeuronType = 0;
+
+                for (int thisConnectionLocation = firstConnection; thisConnectionLocation <= lastConnection; ++thisConnectionLocation)
+                {
+                    geneEffectedByInput[thisConnectionLocation] = true;
+
+                    destenationLocation = gnm.genes[thisConnectionLocation].parts[destenetion] + 1;
+                    destenationNeuronType = gnm.genes[destenationLocation].parts[neuronType];
+
+                    if (gnm.genes[thisConnectionLocation].parts[externalOrInternal] == externalNueron)
+                    {
+                        //Console.WriteLine("I wont fire gene " + destenationLocation + " because it leads to the output layer");
+                        continue;
+                    }
+                    if (destenationNeuronType == neuron.Static || destenationNeuronType == neuron.Input)
+                    {
+                        //Console.WriteLine("I wont fire gene " + destenationLocation + " because it is pointing to a static or input neuron");
+                        continue;
+                    }
+                    if (gnm.genes[thisConnectionLocation].parts[multyplayer] == 0)
+                    {
+                        //Console.WriteLine("I wont fire gene " + destenationLocation + " because the multyplayer from gene " + thisNeuronLocation + " (gene " + thisConnectionLocation + ") is 0");
+
+                        continue;
+                    }
+                    //Console.WriteLine("Im in gene " + thisNeuronLocation + " (neuron). imma baoto fire through gene " + thisConnectionLocation + " which leads to gene " + destenationLocation)
+                    fireThisNeuron(gnm, geneEffectedByInput, destenationLocation);
                 }
             }
-            return (geneEffectingOutput[thisNeuronLocation]);
-        }
+        }   
         public int firstConnectionOfNeuron(int neuronNumber)
         {
             return(genes[neuronNumber + 1].parts[bufferStart]);

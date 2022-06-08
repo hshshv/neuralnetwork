@@ -8,7 +8,7 @@ namespace neuronprog
     {
         //settings
         public const int lenghtOfOriginalDNA = 15;
-        public const int numOfCreatursInEachGeneration = 300;
+        public const int numOfCreatursInEachGeneration = 3;
         public const int stepsInEveryCreaturesLife = 40;
         public const int numOfIntputs = 4;//
         public const int numOfOutputs = 4;
@@ -29,8 +29,13 @@ namespace neuronprog
         {
             genome emptyDNA = new genome(3);
             emptyDNA.addGenes(lenghtOfOriginalDNA);
-
-            creature LUCA = new creature(emptyDNA);
+            emptyDNA.genes[0].parts[0] = Coordinator.numOfIntputs;
+            int avregNumOfConnectionsPerNeuron = (lenghtOfOriginalDNA - Coordinator.numOfOutputs - 1) / Coordinator.numOfOutputs;
+            for (int thisNeuron = 1; thisNeuron <= emptyDNA.genes[0].parts[0]; ++thisNeuron)
+            {
+                emptyDNA.genes[thisNeuron].parts[genome.bufferStart] = avregNumOfConnectionsPerNeuron * (thisNeuron - 1);
+            }
+                creature LUCA = new creature(emptyDNA);
             while (!LUCA.alive())
             {
                 LUCA = new creature(genome.mutate(LUCA.DNA));
@@ -51,7 +56,7 @@ namespace neuronprog
                 }
                 if (BEST.Scoer <= lastBest.Scoer)
                 {
-                    if(alawaysUseTheBestEverCreatureForTheNextGeneration)
+                    if (alawaysUseTheBestEverCreatureForTheNextGeneration)
                     {
                         BEST.TransformInto(lastBest);
                     }
@@ -61,13 +66,13 @@ namespace neuronprog
                     lastBest.TransformInto(BEST);
                     Console.WriteLine("generetion [" + generatioNumber + "] got a new high score: " + BEST.Scoer + ". [X: " + BEST.bug.x + ", Y: " + BEST.bug.y + "]. stars: " + (initialFireStrength - BEST.fireStrength) + ". genome length: " + BEST.DNA.genes.Count + " genes");
                     //BEST.run(true);
-                    if(BEST.Scoer > 100 - minimumDistanceToExtinguishFire)
+                    if (BEST.Scoer > 100 - minimumDistanceToExtinguishFire)
                     {
                         //alawaysUseTheBestEverCreatureForTheNextGeneration = false;
                     }
                     if (initialFireStrength - BEST.fireStrength >= 3)
                     {
-                        
+
                         Console.WriteLine("a very good creture evolved");
                         //BEST.brian.networkDiagnos();
                         Console.WriteLine("cleaning genome and repeting life run");
@@ -79,7 +84,7 @@ namespace neuronprog
                         CLEANEST.DNA.print();
                         network cleanBrain = creature.getNetworkFromGenome(BEST.DNA);
                         CLEANEST.brian.networkDiagnos();
-                        
+
                         while (true)
                         {
                             CLEANEST.run(false);
@@ -137,13 +142,13 @@ namespace neuronprog
         public Generation(creature father, int numOfCreaturesToMake)
         {
             genome serviceDNA = new genome(3);
-            serviceDNA.addGenes(1);
+            serviceDNA.addGenes(1);//prob this crt should die. well we dont care? I guess.
             creature serviceCreature = new creature(serviceDNA);
-            
+
             //Console.WriteLine("making a new generation based on creture who got this score: " + father.Scoer);
             //father.DNA.print();
 
-            for(int thisCreature = 0; thisCreature < numOfCreaturesToMake; ++thisCreature)
+            for (int thisCreature = 0; thisCreature < numOfCreaturesToMake; ++thisCreature)
             {
                 //Console.WriteLine("making creature number " + thisCreature);
                 serviceCreature = new creature(genome.mutate(father.DNA));
