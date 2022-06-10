@@ -8,7 +8,8 @@ namespace neuronprog
     {
         //settings
         public const int lenghtOfOriginalDNA = 15;
-        public const int numOfCreatursInEachGeneration = 3;
+        public const int numOfCreatursInEachGeneration = 300;
+        public const int reportAndCleanDnaEveryThisManyGenerations = 300;
         public const int stepsInEveryCreaturesLife = 40;
         public const int numOfIntputs = 4;//
         public const int numOfOutputs = 4;
@@ -35,7 +36,7 @@ namespace neuronprog
             {
                 emptyDNA.genes[thisNeuron].parts[genome.bufferStart] = avregNumOfConnectionsPerNeuron * (thisNeuron - 1);
             }
-                creature LUCA = new creature(emptyDNA);
+            creature LUCA = new creature(emptyDNA);
             while (!LUCA.alive())
             {
                 LUCA = new creature(genome.mutate(LUCA.DNA));
@@ -48,11 +49,13 @@ namespace neuronprog
             {
                 serviceGeneration = new Generation(BEST, numOfCreatursInEachGeneration);
                 BEST = GdolHador(serviceGeneration);
-                if (generatioNumber % 500 == 0)
+                if (generatioNumber % reportAndCleanDnaEveryThisManyGenerations == 0)
                 {
                     Console.Write("\twe are currently in generetion " + generatioNumber + ". ");
                     BEST.bug.print();
                     Console.WriteLine(". genome length: " + BEST.DNA.genes.Count + " genes");
+                    BEST.clean();
+                    Console.WriteLine("after some cleaning, the new genome length is " + BEST.DNA.genes.Count + " genes");
                 }
                 if (BEST.Scoer <= lastBest.Scoer)
                 {
@@ -72,30 +75,23 @@ namespace neuronprog
                     }
                     if (initialFireStrength - BEST.fireStrength >= 3)
                     {
-
-                        Console.WriteLine("a very good creture evolved");
-                        //BEST.brian.networkDiagnos();
+                        
+                        Console.WriteLine("a very good creture evolved. here are some runs of this creatures: ");
+                        BEST.run(true, 10);
                         Console.WriteLine("cleaning genome and repeting life run");
                         Console.WriteLine("BEST gnm cleaning:\ndirty:");
                         BEST.DNA.print();
+                        Console.WriteLine("dirty brain analsis: ");
+                        BEST.brian.networkDiagnos();
                         Console.WriteLine("clean:");
-                        creature CLEANEST = new creature(BEST.DNA);
-                        CLEANEST.DNA.clean();
-                        CLEANEST.DNA.print();
-                        network cleanBrain = creature.getNetworkFromGenome(BEST.DNA);
-                        CLEANEST.brian.networkDiagnos();
-
-                        while (true)
-                        {
-                            CLEANEST.run(false);
-                            Console.WriteLine("cleanest score: " + CLEANEST.Scoer + ". location: [" + CLEANEST.bug.x + "," + CLEANEST.bug.y + "]. fire location: x = " + Coordinator.fireX + ", y = " + Coordinator.fireY);
-                            BEST.run(false);
-                            Console.WriteLine("best score: " + BEST.Scoer + ". location: [" + BEST.bug.x + "," + BEST.bug.y + "]. fire location: x = " + Coordinator.fireX + ", y = " + Coordinator.fireY);
-
-                            Console.WriteLine("press any key to repet run");
-                            Console.ReadKey();
-                        }
-
+                        BEST.clean();
+                        BEST.DNA.print();
+                        Console.WriteLine("clean brain analsis: ");
+                        BEST.brian.networkDiagnos();
+                        Console.WriteLine("here are some runs of the clean creature:");
+                        BEST.run(true, 10);
+                        punishWaterWaste = true;
+                        while (true) ;
                     }
                 }
             }
@@ -123,6 +119,7 @@ namespace neuronprog
             Console.WriteLine("evo setting:");
             Console.WriteLine("\tlegnth of original dna: " + lenghtOfOriginalDNA);
             Console.WriteLine("\tnum of creature in each generation: " + numOfCreatursInEachGeneration);
+            Console.WriteLine("\treporting and clean DNA every " + reportAndCleanDnaEveryThisManyGenerations +" generations");
             Console.WriteLine("\tsteps in every creaturs life: " + stepsInEveryCreaturesLife);
             Console.WriteLine("\tlife cycles of avery creature: " + testsPerRun);
             Console.WriteLine("\t inputs: " + numOfIntputs + ", outputs: " + numOfOutputs);

@@ -12,7 +12,7 @@ namespace neuronprog
         private bool thisCreatureIsAlive = true;
         public int inputs = Coordinator.numOfIntputs;
         public int outputs = Coordinator.numOfOutputs;
-        
+
         public int[] parameters = new int[Coordinator.numOfParameters];
         public davarPoneVeholek bug = new davarPoneVeholek();
         public int fireStrength = Coordinator.initialFireStrength;
@@ -20,14 +20,14 @@ namespace neuronprog
 
         private const int keep = 1;
         private const int inCheck = 2;
-        
+
         public bool alive()
         {
             return (thisCreatureIsAlive);
         }
         public creature(genome dna)
         {
-            if(thisGenomeIsLegit(dna))
+            if (thisGenomeIsLegit(dna))
             {
                 brian = getNetworkFromGenome(dna);
             }
@@ -56,7 +56,7 @@ namespace neuronprog
             //net.inputNeurons = gnm.genes[0].parts[1];/////why why why
             //net.outputNeurons = gnm.genes[0].parts[2];///this is not sapouz to be genetic
             double thisMultyplayer = 0;
-            
+
             List<int> buffersLocations = new List<int>();
             for (int thisNeuronLocation = 1; thisNeuronLocation <= numOfNeurons; ++thisNeuronLocation)
             {
@@ -69,14 +69,14 @@ namespace neuronprog
             }
             //buffersLocations.Sort();///prob #559
             buffersLocations.Add(buffersLocations[buffersLocations.Count - 1] + 1);
-            if(printNetworkCreation)
-            { 
+            if (printNetworkCreation)
+            {
                 Console.WriteLine("networkGen: added empty closer buffer. total num of buffs is: " + buffersLocations.Count);
             }
             for (int thisNeuron = 0; thisNeuron < numOfNeurons; ++thisNeuron)
             {
                 net.addNeuron(gnm.genes[thisNeuron + 1].parts[genome.neuronType]);
-                if(gnm.genes[thisNeuron + 1].parts[genome.neuronType] == neuron.Static)
+                if (gnm.genes[thisNeuron + 1].parts[genome.neuronType] == neuron.Static)
                 {
                     net.neurons[thisNeuron].setStatic(gnm.genes[thisNeuron + 1].parts[genome.staticNeuronValue]);
                 }
@@ -84,16 +84,16 @@ namespace neuronprog
                 {
                     Console.WriteLine("networkGen: neuron added. tatal num of nrns is now: " + net.neurons.Count);
                 }
-                for(int thisConnection = buffersLocations[thisNeuron]; thisConnection < buffersLocations[thisNeuron + 1] && thisConnection < gnm.genes.Count/*מיותר לכאורה*/; ++thisConnection)
+                for (int thisConnection = buffersLocations[thisNeuron]; thisConnection < buffersLocations[thisNeuron + 1] && thisConnection < gnm.genes.Count/*מיותר לכאורה*/; ++thisConnection)
                 {
                     thisMultyplayer = gnm.genes[thisConnection].parts[genome.multyplayer];
                     thisMultyplayer /= 10;
-                    if(thisMultyplayer == 0)
+                    if (thisMultyplayer == 0)
                     {
                         thisMultyplayer = 1;
                     }
                     net.neurons[thisNeuron].addConnection(gnm.genes[thisConnection].parts[genome.destenetion], thisMultyplayer);
-                    if(gnm.genes[thisConnection].parts[genome.externalOrInternal] %2 == 1)//goes to the final layer
+                    if (gnm.genes[thisConnection].parts[genome.externalOrInternal] % 2 == 1)//goes to the final layer
                     {
                         net.neurons[thisNeuron].connections[net.neurons[thisNeuron].connections.Count - 1].connectedToTheFinalLayer = true;
                     }
@@ -164,7 +164,7 @@ namespace neuronprog
          * well. after some thoughts. this current situation isnt ideal, I would rather just getting rid o fthe genome entayerly, and preforming mutation directly on thee network, where neurons dont infultrat each other. but this will take time to change, and is a bit agienst my goals here.
          * therefore, I have implemented some patches and for now we will continou with the current evo model. also I want pizza right now.
          */
-            
+
         {
             //null filtering
             try
@@ -176,7 +176,7 @@ namespace neuronprog
                 gnm = null;
             }
 
-            if(gnm == null)
+            if (gnm == null)
             {
                 Console.WriteLine("captured null");
 
@@ -184,7 +184,7 @@ namespace neuronprog
             }
 
             //IO coordinating
-            if(gnm.genes[0].parts[0] < Coordinator.numOfIntputs)
+            if (gnm.genes[0].parts[0] < Coordinator.numOfIntputs)
             {
                 gnm.genes[0].parts[0] = Coordinator.numOfIntputs;
                 //return false;
@@ -202,7 +202,7 @@ namespace neuronprog
             gnm.genes[1].parts[genome.bufferStart] = gnm.genes[0].parts[0] + 1; // making suree we are not skipping any connections// see prob #559
 
             //List<int> buffersLocations = new List<int>();
-            for(int thisBuffer = 1; thisBuffer <= numOfNeurons; ++thisBuffer)
+            for (int thisBuffer = 1; thisBuffer <= numOfNeurons; ++thisBuffer)
             {
                 if (thisBuffer > 1)
                 {
@@ -214,9 +214,9 @@ namespace neuronprog
                 if (gnm.genes[thisBuffer].parts[genome.bufferStart] >= gnm.genes.Count || gnm.genes[thisBuffer].parts[genome.bufferStart] <= numOfNeurons)
                 {
                     return false;
-                  //  gnm.genes[thisBuffer].parts[genome.bufferStart] = numOfNeurons + 1;//
+                    //  gnm.genes[thisBuffer].parts[genome.bufferStart] = numOfNeurons + 1;//
                 }
-                
+
                 /*
                 if (buffersLocations.Contains(gnm.genes[thisBuffer].parts[genome.bufferStart]))
                 {
@@ -232,12 +232,13 @@ namespace neuronprog
                 }
                 buffersLocations.Add(gnm.genes[thisBuffer].parts[genome.bufferStart]);
                 */
-                //neuron type handeling
-                if(thisBuffer < Coordinator.numOfIntputs)
+
+                //neuron type handeling - THIS PICE OF CODE WAS RESPONSIBLE for the deth of countless creatures. it was < insted of <=
+                if (thisBuffer <= Coordinator.numOfIntputs)
                 {
                     gnm.genes[thisBuffer].parts[genome.neuronType] = neuron.Input;
                 }
-                else if(gnm.genes[thisBuffer].parts[genome.neuronType] != neuron.Input)//currently Im not allowing memory \ static \ output nuerons at all.
+                else if (gnm.genes[thisBuffer].parts[genome.neuronType] != neuron.Input)//currently Im not allowing memory \ static \ output nuerons at all.
                 {
                     gnm.genes[thisBuffer].parts[genome.neuronType] = neuron.logical;
                 }
@@ -248,11 +249,11 @@ namespace neuronprog
             if (gnm.genes[0].parts[2] <= 0)
             {
                 int highestPointerToOutput = 0;
-                for(int thisConnection = gnm.genes[0].parts[0] + 1; thisConnection <= gnm.genes.Count; ++thisConnection)
+                for (int thisConnection = gnm.genes[0].parts[0] + 1; thisConnection <= gnm.genes.Count; ++thisConnection)
                 {
-                    if(gnm.genes[thisConnection].parts[genome.externalOrInternal] == genome.externalNueron)
+                    if (gnm.genes[thisConnection].parts[genome.externalOrInternal] == genome.externalNueron)
                     {
-                        if(gnm.genes[thisConnection].parts[genome.destenetion] > highestPointerToOutput)
+                        if (gnm.genes[thisConnection].parts[genome.destenetion] > highestPointerToOutput)
                         {
                             highestPointerToOutput = gnm.genes[thisConnection].parts[genome.destenetion];
                         }
@@ -264,7 +265,7 @@ namespace neuronprog
             //bool thisIsTheOnlyConnectionInTheNeuron;
             for (int thisConnection = numOfNeurons + 1; thisConnection < gnm.genes.Count; ++thisConnection)
             {
-                if(gnm.genes[thisConnection].parts[genome.externalOrInternal] % 2 == genome.externalNueron)
+                if (gnm.genes[thisConnection].parts[genome.externalOrInternal] % 2 == genome.externalNueron)
                 {
                     gnm.genes[thisConnection].parts[genome.externalOrInternal] = genome.externalNueron;
                     gnm.genes[thisConnection].parts[genome.destenetion] = gnm.genes[thisConnection].parts[genome.destenetion] % gnm.genes[0].parts[2];
@@ -311,13 +312,18 @@ namespace neuronprog
             thisCreatureIsAlive = false;
             //Console.WriteLine("creature.kill()");
         }
+        public void clean()
+        {
+            DNA.clean();
+            brian = getNetworkFromGenome(DNA);
+        }
         public void printStatus()
         {
             bug.print();
             Console.Write(". I just ");
             switch (brian.strongestOutput())
             {
-                case 0: Console.WriteLine("turned lefta") ; break;
+                case 0: Console.WriteLine("turned lefta"); break;
                 case 1: Console.WriteLine("turned righta"); break;
                 case 2: Console.WriteLine("stepped forwarda"); break;
                 case 3: Console.WriteLine("attempted to extingwish the fire a"); break;
@@ -332,19 +338,19 @@ namespace neuronprog
             double lowestScore = 10000;
             for (int test = 0; test < Coordinator.testsPerRun; ++test)
             {
-                if (doLifeReport) { Console.WriteLine("***test " + test + " out of " + Coordinator.testsPerRun); }
+                if (doLifeReport & false) { Console.WriteLine("***test " + test + " out of " + Coordinator.testsPerRun); }
                 fireStrength = Coordinator.initialFireStrength;
                 switch (rndm.Next(0, 2))//jini ES!
                 {
                     case 0: Coordinator.fireX *= -1; break;
                     case 1: Coordinator.fireY *= -1; break;
                 }
-                
-                
+
+
                 bug.reset();
                 for (int step = 0; step < Coordinator.stepsInEveryCreaturesLife; ++step)
                 {
-                    if(90 - bug.direction + bug.directionTo(Coordinator.fireX, Coordinator.fireY) > 90)
+                    if (90 - bug.direction + bug.directionTo(Coordinator.fireX, Coordinator.fireY) > 90)
                     {
                         brian.neurons[0].setValue(1);
                         brian.neurons[1].setValue(0);
@@ -359,10 +365,10 @@ namespace neuronprog
                     brian.neurons[2].setValue(bug.distanceFrom(Coordinator.fireX, Coordinator.fireY));/*1 / (krich.bug.distanceFrom(fireX, fireY) + 0.0001); // heat sensor*/
                     brian.neurons[3].setValue(bug.directionTo(Coordinator.fireX, Coordinator.fireY) / 10);
 
-                /*
-                krich.brian.neurons[0].setValue(krich.bug.x);
-                krich.brian.neurons[1].setValue(krich.bug.y);
-                */
+                    /*
+                    krich.brian.neurons[0].setValue(krich.bug.x);
+                    krich.brian.neurons[1].setValue(krich.bug.y);
+                    */
                     brian.Fire();
                     if (false & doLifeReport)
                     {
@@ -388,15 +394,15 @@ namespace neuronprog
                     }
                 }
                 calaulateScoer();
-                if (doLifeReport) Console.WriteLine("scoer: " + Scoer);
-                if(lowestScore > Scoer)
+                if (doLifeReport & false) Console.WriteLine("scoer: " + Scoer);
+                if (lowestScore > Scoer)
                 {
                     lowestScore = Scoer;
                 }
-                
+
             }
             Scoer = lowestScore;
-            if(doLifeReport) Console.WriteLine("final scoer: " + Scoer);
+            if (doLifeReport) Console.WriteLine("final scoer: " + Scoer);
             return (Scoer);
 
             void calaulateScoer()
@@ -404,10 +410,17 @@ namespace neuronprog
                 Scoer = 100 - bug.distanceFrom(Coordinator.fireX, Coordinator.fireY) + 10 * (Coordinator.initialFireStrength - fireStrength);
             }
         }
-        
+        public void run(bool doLifeReport, int runThisManyTimes)
+        {
+            for (int thisRun = 0; thisRun < runThisManyTimes; thisRun++)
+            {
+                run(doLifeReport);
+
+            }
+        }
         private void doAction(int actionNumber, bool doLifeReport)
         {
-            switch(actionNumber)
+            switch (actionNumber)
             {
                 case 0: bug.turn(10); if (doLifeReport) { Console.WriteLine("\tturned left"); } break;
                 case 1: bug.turn(-10); if (doLifeReport) { Console.WriteLine("\tturned right"); } break;
@@ -416,7 +429,7 @@ namespace neuronprog
                     if (bug.distanceFrom(Coordinator.fireX, Coordinator.fireY) < Coordinator.minimumDistanceToExtinguishFire)
                     {
                         --fireStrength;
-                        if(doLifeReport)
+                        if (doLifeReport)
                         {
                             Console.Write("I succsessffuullyy exed fire. my location is ");
                             bug.print();
@@ -430,7 +443,7 @@ namespace neuronprog
                     if (doLifeReport)
                     {
                         Console.WriteLine("\tattempted to extingwish the fire (" + Coordinator.fireX + ", " + Coordinator.fireY + ")");
-                        
+
                     }
                     break;
             }
