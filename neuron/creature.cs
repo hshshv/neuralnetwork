@@ -10,7 +10,7 @@ namespace neuronprog
         public genome DNA;
         public network brian;
         private bool thisCreatureIsAlive = true;
-        public int inputs = Coordinator.numOfIntputs;
+        public int inputs = Coordinator.numOfInputs;
         public int outputs = Coordinator.numOfOutputs;
 
         public int[] parameters = new int[Coordinator.numOfParameters];
@@ -38,6 +38,21 @@ namespace neuronprog
             }
             DNA = dna;
         }
+        public creature(creature srcture)
+        {
+            if (thisGenomeIsLegit(srcture.DNA))
+            {
+                brian = getNetworkFromGenome(srcture.DNA);
+            }
+            else
+            {
+                this.kill();
+            }
+            DNA = srcture.DNA;
+            parameters = srcture.parameters;
+            fireStrength = srcture.fireStrength;
+            Scoer = srcture.Scoer;
+        }
         public static network getNetworkFromGenome(genome gnm)
         {
             bool printNetworkCreation = false;
@@ -51,7 +66,7 @@ namespace neuronprog
                 Console.WriteLine(" nuerons network");
             }
 
-            network net = new network(Coordinator.numOfIntputs, Coordinator.numOfOutputs);
+            network net = new network(Coordinator.numOfInputs, Coordinator.numOfOutputs);
             int numOfNeurons = gnm.genes[0].parts[0];
             //net.inputNeurons = gnm.genes[0].parts[1];/////why why why
             //net.outputNeurons = gnm.genes[0].parts[2];///this is not sapouz to be genetic
@@ -153,6 +168,8 @@ namespace neuronprog
         }*/
         public static bool thisGenomeIsLegit(genome gnm) //AKA officer G (enforces some structure on the randome genome)
         /*
+         * this function MUST NOT contain any random ingridient. ALL determenistic here.
+         * 
          * prob #559
          * we need to make sure that the buffers locations are in order, so we can diturmen where every chapter of connections ends.
          * the solution Im offering right now is to just check if there is a buffer that obay that rule, and if so, decide that this genome is not legit.
@@ -184,12 +201,12 @@ namespace neuronprog
             }
 
             //IO coordinating
-            if (gnm.genes[0].parts[0] < Coordinator.numOfIntputs)
+            if (gnm.genes[0].parts[0] < Coordinator.numOfInputs)
             {
-                gnm.genes[0].parts[0] = Coordinator.numOfIntputs;
+                gnm.genes[0].parts[0] = Coordinator.numOfInputs;
                 //return false;
             }
-            gnm.genes[0].parts[1] = Coordinator.numOfIntputs;
+            gnm.genes[0].parts[1] = Coordinator.numOfInputs;
             gnm.genes[0].parts[2] = Coordinator.numOfOutputs;
 
             int numOfNeurons = gnm.genes[0].parts[0];
@@ -214,27 +231,10 @@ namespace neuronprog
                 if (gnm.genes[thisBuffer].parts[genome.bufferStart] >= gnm.genes.Count || gnm.genes[thisBuffer].parts[genome.bufferStart] <= numOfNeurons)
                 {
                     return false;
-                    //  gnm.genes[thisBuffer].parts[genome.bufferStart] = numOfNeurons + 1;//
                 }
-
-                /*
-                if (buffersLocations.Contains(gnm.genes[thisBuffer].parts[genome.bufferStart]))
-                {
-                    gnm.genes[thisBuffer].parts[genome.bufferStart] = numOfNeurons + 1;
-                    while(buffersLocations.Contains(gnm.genes[thisBuffer].parts[genome.bufferStart]) && gnm.genes[thisBuffer].parts[genome.bufferStart] < gnm.genes.Count)
-                    {
-                        ++gnm.genes[thisBuffer].parts[genome.destenetion];
-                    }
-                    if(gnm.genes[thisBuffer].parts[genome.destenetion] >= gnm.genes.Count)
-                    {
-                        return false;//too many buffers in this genome
-                    }
-                }
-                buffersLocations.Add(gnm.genes[thisBuffer].parts[genome.bufferStart]);
-                */
 
                 //neuron type handeling - THIS PICE OF CODE WAS RESPONSIBLE for the deth of countless creatures. it was < insted of <=
-                if (thisBuffer <= Coordinator.numOfIntputs)
+                if (thisBuffer <= Coordinator.numOfInputs)
                 {
                     gnm.genes[thisBuffer].parts[genome.neuronType] = neuron.Input;
                 }
@@ -275,38 +275,18 @@ namespace neuronprog
                     gnm.genes[thisConnection].parts[genome.externalOrInternal] = genome.internalNeuron;
                     gnm.genes[thisConnection].parts[genome.destenetion] = gnm.genes[thisConnection].parts[genome.destenetion] % numOfNeurons;
                 }
-                /*
-                if(gnm.genes[thisConnection].parts[genome.multyplayer] == 0) //empty connection killing//fix needed: if this is the only connection in the neuron - delete the buffer
-                {
-                    
-                    if(thisConnection == gnm.genes.Count - 1 && gnm.genes[numOfNeurons].parts[genome.bufferStart] == thisConnection)
-                    {
-                        thisIsTheOnlyConnectionInTheNeuron = true;
-                    }
-                    else if(thisConnection == numOfNeurons + 1 && gnm.genes[2].parts[genome.bufferStart] == thisConnection + 1)//very small networks might break here / actually no, the 'if' above should catch networks with only one connection
-                    {
-                        thisIsTheOnlyConnectionInTheNeuron = true;
-                    }
-                    else if(/*this is a connection in a mono connection neuron)
-                        for(int thisBuffer = 1; thisBuffer <= numOfNeurons; ++thisBuffer)
-                    {
-                        if(gnm.genes[thisBuffer].parts[genome.bufferStart] > thisConnection)
-                        {
-                            --gnm.genes[thisBuffer].parts[genome.bufferStart];
-                        }
-                    }
-                    gnm.genes.RemoveAt(thisConnection);
-                }*/
             }
             return true;
         }
+        /*
         public void TransformInto(creature crt)
         {
-            DNA = crt.DNA;
-            brian = crt.brian;
-            parameters = crt.parameters; //it doesnt work. aintit
+            DNA.transformInto(crt.DNA);
+            brian.transformInto(crt.brian);
+            parameters = crt.parameters;
             Scoer = crt.Scoer;
         }
+        */
         void kill()
         {
             thisCreatureIsAlive = false;
@@ -336,34 +316,45 @@ namespace neuronprog
         public double run(bool doLifeReport)
         {
             double lowestScore = 10000;
+            /*switch (rndm.Next(0, 2))//jini ES!
+            {
+                case 0: Coordinator.fireX *= -1; break;
+                case 1: Coordinator.fireY *= -1; break;
+            }*/
             for (int test = 0; test < Coordinator.testsPerRun; ++test)
             {
                 if (doLifeReport & false) { Console.WriteLine("***test " + test + " out of " + Coordinator.testsPerRun); }
                 fireStrength = Coordinator.initialFireStrength;
-                switch (rndm.Next(0, 2))//jini ES!
+                
+                if(test % 2 == 0)
                 {
-                    case 0: Coordinator.fireX *= -1; break;
-                    case 1: Coordinator.fireY *= -1; break;
+                    Coordinator.fireX *= -1;
                 }
-
+                else
+                {
+                    Coordinator.fireY *= -1;
+                }
 
                 bug.reset();
                 for (int step = 0; step < Coordinator.stepsInEveryCreaturesLife; ++step)
                 {
-                    if (90 - bug.direction + bug.directionTo(Coordinator.fireX, Coordinator.fireY) > 90)
+                    brian.neurons[0].setValue(0);
+                    brian.neurons[1].setValue(0);
+                    //if (90 - bug.direction + bug.directionTo(Coordinator.fireX, Coordinator.fireY) > 90)
+                    double angulerDistanceFromTheRight = bug.direction() - bug.directionTo(Coordinator.fireX, Coordinator.fireY);
+                    double angulerDistanceFromTheLeft = bug.directionTo(Coordinator.fireX, Coordinator.fireY) - bug.direction();
+                    if (angulerDistanceFromTheRight < angulerDistanceFromTheLeft)
                     {
-                        brian.neurons[0].setValue(1);
-                        brian.neurons[1].setValue(0);
+                        brian.neurons[0].setValue(1); //right is closer (then current direction)
                     }
-                    else
+                    else if (angulerDistanceFromTheRight > angulerDistanceFromTheLeft)
                     {
-                        brian.neurons[0].setValue(0);
-                        brian.neurons[1].setValue(1);
+                        brian.neurons[1].setValue(1);//left is closer
                     }
                     //brian.neurons[0].setValue(); // fire from ritght
                     //brian.neurons[1].setValue(180 - brian.neurons[0].value()); // fire form left
                     brian.neurons[2].setValue(bug.distanceFrom(Coordinator.fireX, Coordinator.fireY));/*1 / (krich.bug.distanceFrom(fireX, fireY) + 0.0001); // heat sensor*/
-                    brian.neurons[3].setValue(bug.directionTo(Coordinator.fireX, Coordinator.fireY) / 10);
+                    //brian.neurons[3].setValue(bug.directionTo(Coordinator.fireX, Coordinator.fireY) / 10);
 
                     /*
                     krich.brian.neurons[0].setValue(krich.bug.x);
@@ -415,7 +406,6 @@ namespace neuronprog
             for (int thisRun = 0; thisRun < runThisManyTimes; thisRun++)
             {
                 run(doLifeReport);
-
             }
         }
         private void doAction(int actionNumber, bool doLifeReport)

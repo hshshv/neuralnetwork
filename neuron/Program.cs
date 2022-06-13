@@ -9,7 +9,15 @@ namespace neuronprog
     {
         static void Main(string[] args)
         {
+            /*
+            msho avner = new msho(5, "hamesh");
+            msho avner2 = new msho(5, "hamesh");
+            avner2 = new msho(avner.nam, avner.text);
+            avner.nam = 4;
+            Console.WriteLine(avner2.nam + avner2.text);
+            */
             //Console.WriteLine(mike.direction + (180 * Math.Atan((20 - mike.y) / (20 - mike.x)) / Math.PI));
+            
             Coordinator.printEvoSetting();
             creature winner = Coordinator.evolution(1000000);
             Console.ReadKey();

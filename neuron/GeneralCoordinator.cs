@@ -9,9 +9,9 @@ namespace neuronprog
         //settings
         public const int lenghtOfOriginalDNA = 15;
         public const int numOfCreatursInEachGeneration = 300;
-        public const int reportAndCleanDnaEveryThisManyGenerations = 300;
+        public const int reportAndCleanDnaEveryThisManyGenerations = 100;
         public const int stepsInEveryCreaturesLife = 40;
-        public const int numOfIntputs = 4;//
+        public const int numOfInputs = 4;//
         public const int numOfOutputs = 4;
         public const int numOfParameters = 0;
         public static int fireX = 20;
@@ -23,19 +23,21 @@ namespace neuronprog
         public const int chanceOfDeletingAGene = 210;
         public static bool alawaysUseTheBestEverCreatureForTheNextGeneration = true;
         public static bool punishWaterWaste = false;
-        public const int testsPerRun = 3;
+        public const int testsPerRun = 2;
+        public const bool doSigmoid = false;
         //end of settings
         static Random rndm = new Random();
-        public static creature evolution(int generationsToEvolveIfThatIsHowYouSpellIt)
+        public static creature evolution(int generationsToEvolveIfThatIsHowYouSpellIt)// LEMMIE BE CLEAR. SOMNG HERE IS MESSED UP BAD.
         {
             genome emptyDNA = new genome(3);
             emptyDNA.addGenes(lenghtOfOriginalDNA);
-            emptyDNA.genes[0].parts[0] = Coordinator.numOfIntputs;
-            int avregNumOfConnectionsPerNeuron = (lenghtOfOriginalDNA - Coordinator.numOfOutputs - 1) / Coordinator.numOfOutputs;
+            emptyDNA.genes[0].parts[0] = Coordinator.numOfInputs;
+            int avregNumOfConnectionsPerNeuron = (lenghtOfOriginalDNA - Coordinator.numOfInputs - 1) / Coordinator.numOfInputs;
             for (int thisNeuron = 1; thisNeuron <= emptyDNA.genes[0].parts[0]; ++thisNeuron)
             {
-                emptyDNA.genes[thisNeuron].parts[genome.bufferStart] = avregNumOfConnectionsPerNeuron * (thisNeuron - 1);
+                emptyDNA.genes[thisNeuron].parts[genome.bufferStart] = (avregNumOfConnectionsPerNeuron * (thisNeuron - 1)) + Coordinator.numOfInputs + 1;
             }
+            //
             creature LUCA = new creature(emptyDNA);
             while (!LUCA.alive())
             {
@@ -44,38 +46,35 @@ namespace neuronprog
             creature BEST = new creature(LUCA.DNA);
             creature lastBest = new creature(LUCA.DNA);
             Generation serviceGeneration = new Generation(BEST, 1);
+            //
             Console.WriteLine("starting evo");
             for (int generatioNumber = 0; generatioNumber < generationsToEvolveIfThatIsHowYouSpellIt; ++generatioNumber)
             {
+                Console.WriteLine("generetion " + generatioNumber);
                 serviceGeneration = new Generation(BEST, numOfCreatursInEachGeneration);
-                BEST = GdolHador(serviceGeneration);
+                lastBest = new creature(GdolHador(serviceGeneration));//prob
                 if (generatioNumber % reportAndCleanDnaEveryThisManyGenerations == 0)
                 {
-                    Console.Write("\twe are currently in generetion " + generatioNumber + ". ");
+                    Console.Write("\n\twe are currently in generetion " + generatioNumber + ". ");
                     BEST.bug.print();
                     Console.WriteLine(". genome length: " + BEST.DNA.genes.Count + " genes");
                     BEST.clean();
-                    Console.WriteLine("after some cleaning, the new genome length is " + BEST.DNA.genes.Count + " genes");
+                    Console.WriteLine("\tafter some cleaning, the new genome length is " + BEST.DNA.genes.Count + " genes\n");
                 }
-                if (BEST.Scoer <= lastBest.Scoer)
+                if (BEST.Scoer < lastBest.Scoer)
                 {
                     if (alawaysUseTheBestEverCreatureForTheNextGeneration)
                     {
-                        BEST.TransformInto(lastBest);
+                        BEST = new creature(lastBest);
                     }
-                }
-                else
-                {
-                    lastBest.TransformInto(BEST);
                     Console.WriteLine("generetion [" + generatioNumber + "] got a new high score: " + BEST.Scoer + ". [X: " + BEST.bug.x + ", Y: " + BEST.bug.y + "]. stars: " + (initialFireStrength - BEST.fireStrength) + ". genome length: " + BEST.DNA.genes.Count + " genes");
                     //BEST.run(true);
                     if (BEST.Scoer > 100 - minimumDistanceToExtinguishFire)
                     {
                         //alawaysUseTheBestEverCreatureForTheNextGeneration = false;
                     }
-                    if (initialFireStrength - BEST.fireStrength >= 3)
+                    if (BEST.Scoer > 100)
                     {
-                        
                         Console.WriteLine("a very good creture evolved. here are some runs of this creatures: ");
                         BEST.run(true, 10);
                         Console.WriteLine("cleaning genome and repeting life run");
@@ -122,7 +121,7 @@ namespace neuronprog
             Console.WriteLine("\treporting and clean DNA every " + reportAndCleanDnaEveryThisManyGenerations +" generations");
             Console.WriteLine("\tsteps in every creaturs life: " + stepsInEveryCreaturesLife);
             Console.WriteLine("\tlife cycles of avery creature: " + testsPerRun);
-            Console.WriteLine("\t inputs: " + numOfIntputs + ", outputs: " + numOfOutputs);
+            Console.WriteLine("\t inputs: " + numOfInputs + ", outputs: " + numOfOutputs);
             Console.WriteLine("\tnum of creature parameters: " + numOfParameters);
             Console.WriteLine("\tinitial fire location: X=" + fireX + ", y=" + fireY);
             Console.WriteLine("\tinitial fire strength: " + initialFireStrength);
@@ -132,7 +131,6 @@ namespace neuronprog
             Console.WriteLine("\tpunish water wast: " + punishWaterWaste);
         }
     }
-
     class Generation
     {
         public List<creature> population = new List<creature>();
@@ -163,4 +161,16 @@ namespace neuronprog
             //Console.WriteLine("A new generation has been made");
         }
     }
+    class msho
+    {
+        public int nam;
+        public string text;
+        public msho(int num, string txt)
+        {
+            nam = num;
+            text = txt;
+        }
+    }
+    
+    
 }

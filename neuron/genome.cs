@@ -5,6 +5,46 @@ using System.Runtime;
 
 namespace neuronprog
 {
+    class gene
+    {
+        public int[] parts;//you should make a general class, not for the spesific case of 3 part in every gene
+        public gene(int partsInThisGene)
+        {
+            parts = new int[partsInThisGene];
+            for (int i = 0; i < parts.Length; ++i)
+            {
+                parts[i] = 100;//100 is the dflt value for a part in the gene
+            }
+        }
+        public gene(int[] prts)
+        {
+            parts = prts;
+        }
+        public void print()
+        {
+            Console.Write("{");
+            for (int i = 0; i < parts.Length; ++i)
+            {
+                Console.Write(parts[i]);
+                if (i != parts.Length - 1)
+                {
+                    Console.Write(", ");
+                }
+            }
+            Console.Write("}");
+        }
+        public void transformInto(gene newOne)
+        {
+            if (newOne.parts.Length != parts.Length)
+            {
+                return;
+            }
+            for (int thisPart = 0; thisPart < parts.Length; ++thisPart)
+            {
+                parts[thisPart] = newOne.parts[thisPart];
+            }
+        }
+    }
     class genome
     {
         public List<gene> genes = new List<gene>();
@@ -27,6 +67,11 @@ namespace neuronprog
         public genome(int partPerGene)
         {
             numberOfPartInEveryGene = partPerGene;
+        }
+        public genome(genome srcgenome)
+        {
+            numberOfPartInEveryGene = srcgenome.numberOfPartInEveryGene;
+            genes = srcgenome.genes;
         }
         public void addGene()
         {
@@ -342,46 +387,6 @@ namespace neuronprog
             else
             {
                 return(genes[neuronNumber + 2].parts[bufferStart] - 1);
-            }
-        }
-    }
-    class gene
-    {
-        public int[] parts;//you should make a general class, not for the spesific case of 3 part in every gene
-        public gene(int partsInThisGene)
-        {
-            parts = new int[partsInThisGene];
-            for (int i = 0; i < parts.Length; ++i)
-            {
-                parts[i] = 100;//100 is the dflt value for a part in the gene
-            }
-        }
-        public gene(int[] prts)
-        {
-            parts = prts;
-        }
-        public void print()
-        {
-            Console.Write("{");
-            for (int i = 0; i < parts.Length; ++i)
-            {
-                Console.Write(parts[i]);
-                if (i != parts.Length - 1)
-                {
-                    Console.Write(", ");
-                }
-            }
-            Console.Write("}");
-        }
-        public void transformInto(gene newOne)
-        {
-            if(newOne.parts.Length != parts.Length)
-            {
-                return;
-            }
-            for(int thisPart = 0; thisPart < parts.Length; ++thisPart)
-            {
-                parts[thisPart] = newOne.parts[thisPart];
             }
         }
     }

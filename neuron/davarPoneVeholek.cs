@@ -8,32 +8,31 @@ namespace neuronprog
     {
         public double x = 0;
         public double y = 0;
-        public double direction = 0;
-        private double radianDirection;
+        public double myDirection = 0;
         public davarPoneVeholek()
         {
 
         }
+        public double direction()
+        {
+            return myDirection;
+        }
+        public void direct(double newDirection)
+        {
+            myDirection = inPositiveAngel(newDirection);
+        }
         public void step(double steps)
         {
-            radianDirection = Math.PI * (direction / 180);
-            x += steps * Math.Cos(radiansOf(direction));
-            y += steps * Math.Sin(radiansOf(direction));
-            
-            
-            /*
-            double newX = x + (steps / (Math.Pow(Math.Tan(radianDirection), 2) + 1));
-            y = y + Math.Tan(radianDirection) * (newX - x);
-            x = newX;
-            */
+            x += steps * Math.Cos(radiansOf(myDirection));
+            y += steps * Math.Sin(radiansOf(myDirection));
         }
         public void turnTo(double newDirection)
         {
-            direction = newDirection % 360;
+            myDirection = newDirection % 360;
         }
         public void turn(double additionalDegrees)
         {
-            turnTo(direction + additionalDegrees);
+            turnTo(myDirection + additionalDegrees);
         }
         public void goTo(Double newX, double newY)
         {
@@ -50,7 +49,7 @@ namespace neuronprog
         }
         public void print()
         {
-            Console.Write("X= " + x + ", Y= " + y + ". direction: " + direction);
+            Console.Write("X= " + x + ", Y= " + y + ". direction: " + myDirection);
         }
         public static Double radiansOf(double degrees)
         {
@@ -58,7 +57,7 @@ namespace neuronprog
         }
         public void reset()
         {
-            direction = 0;
+            myDirection = 0;
             x = 0;
             y = 0;
         }
@@ -69,8 +68,16 @@ namespace neuronprog
             {
                 theDirection += 180;
             }
-            return (theDirection % 360);
+            return (inPositiveAngel(theDirection));
         }
-    
+        public static double inPositiveAngel(double drctn)
+        {
+            drctn = drctn % 360;
+            if(drctn >= 0)
+            {
+                return drctn;
+            }
+            return (inPositiveAngel(drctn + 360));
+        }
     }
 }

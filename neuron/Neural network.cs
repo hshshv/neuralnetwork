@@ -38,12 +38,10 @@ namespace neuronprog
         private int myType;
         public bool RecivedInfo = false;
         //public string name;
-
         public bool isOn()
         {
             return (myValue >= activetionLevel);
         }
-
         public neuron(List<connection> cncs)
         {
             connections = cncs;
@@ -56,9 +54,7 @@ namespace neuronprog
         {
             name = neuronName;
         }*/
-
         public neuron() { }
-
         public neuron(int Ntype)
         {
             myType = Ntype % nueornTyps;
@@ -71,7 +67,6 @@ namespace neuronprog
                 RecivedInfo = false;
             }
         }
-
         /*public neuron(int destention, double multypliiir, double initialValue) : this(destention, multypliiir)
         {
             value = initialValue;
@@ -148,11 +143,10 @@ namespace neuronprog
     }
     class network
     {
-        bool printNetworkActivity = false; //practicly const, not formally cause of the anoyyyyying warnings about unreachable code
-        const bool doSigmoid = true;
+        static bool printNetworkActivity = false; //practicly const, not formally cause of the anoyyyyying warnings about unreachable code
         public List<neuron> neurons = new List<neuron>();
         public neuron[] outputLayer = new neuron[Coordinator.numOfOutputs];//צריך איכשהו להגדיר את זה דרך המתזמנן הכללי ולא מכאן
-        public int inputNeurons = Coordinator.numOfIntputs;
+        public int inputNeurons = Coordinator.numOfInputs;
         public int outputNeurons = Coordinator.numOfOutputs;
         public network(int inpNueurons, int outNeurons)
         {
@@ -201,7 +195,7 @@ namespace neuronprog
                     Console.WriteLine("  fureing neuron " + thisNeuron);
                 }
                 
-                if(doSigmoid)
+                if(Coordinator.doSigmoid)
                 {
                     if(printNetworkActivity)
                         Console.Write("The value of neuron " + thisNeuron + " has been sigmofaid from " + neurons[thisNeuron].value());
@@ -329,6 +323,13 @@ namespace neuronprog
                 }
             }
             return (true);
+        }
+        public void transformInto(network originNet)
+        {
+            neurons = originNet.neurons;
+            outputLayer = originNet.outputLayer;
+            inputNeurons = originNet.inputNeurons;
+            outputNeurons = originNet.outputNeurons;
         }
         /*public void killEmptyConnections()
         {
