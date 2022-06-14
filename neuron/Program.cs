@@ -9,6 +9,41 @@ namespace neuronprog
     {
         static void Main(string[] args)
         {
+            genome POCENOM = new genome(3);
+            int[] gnim = { 1, 2, 3 };
+
+            gnim = new int[] { 4, 4, 4 }; POCENOM.addGene(new gene(gnim));
+
+            gnim = new int[] { 5, 1, 0 }; POCENOM.addGene(new gene(gnim));
+            gnim = new int[] { 6, 1, 0 }; POCENOM.addGene(new gene(gnim));
+            gnim = new int[] { 7, 1, 0 }; POCENOM.addGene(new gene(gnim));
+            gnim = new int[] { 9, 1, 0 }; POCENOM.addGene(new gene(gnim));
+
+            gnim = new int[] { 0, 10, 1 }; POCENOM.addGene(new gene(gnim));
+            gnim = new int[] { 1, 10, 1 }; POCENOM.addGene(new gene(gnim));
+            gnim = new int[] { 2, 1, 1 }; POCENOM.addGene(new gene(gnim));
+            gnim = new int[] { 3, 1000, 1 }; POCENOM.addGene(new gene(gnim));
+            gnim = new int[] { 3, 0, 1 }; POCENOM.addGene(new gene(gnim));
+
+            creature POCO = new creature(POCENOM);
+            Console.WriteLine("POCO is alive: " + POCO.alive());
+            Console.WriteLine("POCO. analesis: ");
+            POCO.brian.networkDiagnos();
+            Console.WriteLine("POCO RUN:");
+            POCO.run(true);
+            /*
+            { 4, 4, 4}
+
+            { 5, 1, 0}
+            { 6, 1, 0}
+            { 7, 1, 0}
+            { 9, 1, 0}
+
+            { 1, 1, 1}
+            { 0, 1, 1}
+            { 2, 0.1, 1}
+            { 3, 100, 1}
+            { 3, 0, 1}
             /*
             msho avner = new msho(5, "hamesh");
             msho avner2 = new msho(5, "hamesh");
@@ -17,7 +52,7 @@ namespace neuronprog
             Console.WriteLine(avner2.nam + avner2.text);
             */
             //Console.WriteLine(mike.direction + (180 * Math.Atan((20 - mike.y) / (20 - mike.x)) / Math.PI));
-            
+            /*
             Coordinator.printEvoSetting();
             creature winner = Coordinator.evolution(1000000);
             Console.ReadKey();

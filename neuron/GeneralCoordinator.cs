@@ -8,8 +8,8 @@ namespace neuronprog
     {
         //settings
         public const int lenghtOfOriginalDNA = 15;
-        public const int numOfCreatursInEachGeneration = 300;
-        public const int reportAndCleanDnaEveryThisManyGenerations = 100;
+        public const int numOfCreatursInEachGeneration = 100;
+        public const int reportAndCleanDnaEveryThisManyGenerations = 250;
         public const int stepsInEveryCreaturesLife = 40;
         public const int numOfInputs = 4;//
         public const int numOfOutputs = 4;
@@ -50,7 +50,7 @@ namespace neuronprog
             Console.WriteLine("starting evo");
             for (int generatioNumber = 0; generatioNumber < generationsToEvolveIfThatIsHowYouSpellIt; ++generatioNumber)
             {
-                Console.WriteLine("generetion " + generatioNumber);
+                //Console.WriteLine("generetion " + generatioNumber);
                 serviceGeneration = new Generation(BEST, numOfCreatursInEachGeneration);
                 lastBest = new creature(GdolHador(serviceGeneration));//prob
                 if (generatioNumber % reportAndCleanDnaEveryThisManyGenerations == 0)

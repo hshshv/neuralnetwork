@@ -361,7 +361,8 @@ namespace neuronprog
                     krich.brian.neurons[1].setValue(krich.bug.y);
                     */
                     brian.Fire();
-                    if (false & doLifeReport)
+                    brian.printOutputs(false);
+                    if (doLifeReport)
                     {
                         Console.WriteLine("step " + step);
                     }
@@ -370,12 +371,12 @@ namespace neuronprog
                     {
                         if (brian.outputLayer[thisOutput].isOn())
                         {
-                            doAction(thisOutput, false & doLifeReport);
+                            doAction(thisOutput, doLifeReport);
                         }
                     }
                     if (brian.noOutput() && doLifeReport)
                     {
-                        doAction(brian.strongestOutput(), false & doLifeReport);
+                        doAction(brian.strongestOutput(), doLifeReport);
                     }
                     if (false & doLifeReport)
                     {

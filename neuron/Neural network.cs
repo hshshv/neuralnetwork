@@ -29,7 +29,7 @@ namespace neuronprog
         public const int Memory = 3;
         public const int Output = 4;
         public const int nueornTyps = 4;
-        static double activetionLevel = 0.85;
+        static double activetionLevel = 0.5;
         public static string[] typeNames = {"logical", "input", "static", "memory", "output" };
         //end of neuron typs
 
@@ -143,7 +143,7 @@ namespace neuronprog
     }
     class network
     {
-        static bool printNetworkActivity = false; //practicly const, not formally cause of the anoyyyyying warnings about unreachable code
+        static bool printNetworkActivity = false;//warning: dont do it. you cant handle it. //practicly const, not formally cause of the anoyyyyying warnings about unreachable code
         public List<neuron> neurons = new List<neuron>();
         public neuron[] outputLayer = new neuron[Coordinator.numOfOutputs];//צריך איכשהו להגדיר את זה דרך המתזמנן הכללי ולא מכאן
         public int inputNeurons = Coordinator.numOfInputs;
@@ -271,17 +271,37 @@ namespace neuronprog
                     
                 }
             }
-            printOutput();
+            printOutputs(true);
             Console.WriteLine("///////////////");
         }
-        public void printOutput()
+        public void printOutputs(bool doExactValue)
+        {
+            Console.Write("outputs: [");
+            for (int thisOutput = 0; thisOutput < outputLayer.Length; ++thisOutput)
+            {
+                if (doExactValue)
+                {
+                    Console.Write(outputLayer[thisOutput].value());
+                }
+                else
+                {
+                    Console.Write(outputLayer[thisOutput].isOn());
+                }
+                if (thisOutput < outputLayer.Length - 1)
+                {
+                    Console.Write(", ");
+                }
+            }
+            Console.WriteLine("]");
+        }
+        /*public void printOutput()
         {
             Console.WriteLine("Network Outputs:");
             for (int thisOutput = 0; thisOutput < outputLayer.Length; ++thisOutput)
             {
                 Console.WriteLine("Output [" + thisOutput + "]: " + outputLayer[thisOutput].value());
             }
-        }
+        }*/
         public void clear(bool clearMemory)
         {
             for(int thisNeuron = 0; thisNeuron < neurons.Count; ++thisNeuron)
